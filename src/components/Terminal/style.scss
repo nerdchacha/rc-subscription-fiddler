@@ -10,4 +10,14 @@
   font-size: 12px;
   font-weight: bold;
   font-family: "Lucida Console", "Menlo", "Monaco", "Courier", monospace;
+
+  .console-line {
+    display: flex;
+    justify-content: space-between;
+    svg {
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }
 }

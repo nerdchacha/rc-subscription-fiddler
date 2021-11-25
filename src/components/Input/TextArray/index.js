@@ -1,5 +1,6 @@
-import { Fragment } from 'react'
 import { FieldArray } from 'formik'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPlus, faMinus } from '@fortawesome/free-solid-svg-icons'
 
 import './style.scss'
 
@@ -37,10 +38,12 @@ const TextArray = (props) => {
                     />
                     {touched[index] && error[index] ? (<div className="error">{error[index]}</div>) : null}
                   </div>
-                  {listOfValues.length > 1 ? <button className="remove rc-button primary" onClick={removeFromList(index)}>-</button> : ''}
+                  {listOfValues.length > 1 ? <button className="remove rc-button primary" onClick={removeFromList(index)}><FontAwesomeIcon icon={faMinus} /></button> : ''}
                 </div>
               )})}
-              <button className="add rc-button primary" onClick={addToList}>+</button>
+              <button className="add rc-button primary" onClick={addToList}>
+                <FontAwesomeIcon icon={faPlus} />
+              </button>
             </>
           )}}
         </FieldArray>

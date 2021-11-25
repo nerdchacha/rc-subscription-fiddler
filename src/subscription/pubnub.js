@@ -1,10 +1,10 @@
 const RC = require('ringcentral');
 
 const logEventMessage = (type, event, data, appendToConsole) => {
-  appendToConsole(`Received ${type} event ${event}`)
+  appendToConsole({text: `Received ${type} event ${event}`})
   if (data) {
-    appendToConsole('Event Data')
-    appendToConsole(JSON.stringify(data, null, 2))
+    appendToConsole({text: 'Event Data'})
+    appendToConsole({text: JSON.stringify(data, null, 2), canCopy: true})
   }
 }
 
@@ -20,14 +20,14 @@ const subscribe = async (config, appendToConsole) => {
 
   try {
     const response = await platform.login({ username, password, extension })
-    appendToConsole('Succesfully logged into the RingCental Account')
-    appendToConsole('The auth API response is')
-    appendToConsole(JSON.stringify(response.json(), null, 2))
+    appendToConsole({text: 'Succesfully logged into the RingCental Account'})
+    appendToConsole({text: 'The auth API response is'})
+    appendToConsole({text: JSON.stringify(response.json(), null, 2), canCopy: true})
   } catch (e) {
-    appendToConsole('Unable to log into RingCentral Platform')
-    appendToConsole(JSON.stringify(e, null, 2))
+    appendToConsole({text: 'Unable to log into RingCentral Platform'})
+    appendToConsole({text: JSON.stringify(e, null, 2), canCopy: true})
   }
-  appendToConsole('Attempting to start subscription')
+  appendToConsole({text: 'Attempting to start subscription'})
   subscription.setEventFilters([['/account/~/telephony/sessions']]).register();
   
   platform.on(platform.events.loginSuccess, (data) => logEventMessage('PLATFORM', 'LOGIN SUCCESS', data, appendToConsole))

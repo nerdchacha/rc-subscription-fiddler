@@ -1,2 +1,2 @@
-export const append = (data) => ({type: 'append', data})
+export const append = (text, canCopy) => ({type: 'append', data: {text, canCopy}})
 export const clear = () => ({type: 'clear'})

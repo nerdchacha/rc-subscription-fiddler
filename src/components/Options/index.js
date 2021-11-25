@@ -131,7 +131,7 @@ const Options = (props) => {
 }
 
 const mapDispatchToProps = (dispatch) => ({
-  append: (data) => dispatch(append(data)),
+  append: ({text, canCopy = false}) => dispatch(append(text, canCopy)),
   clear: () => dispatch(clear())
 })
 
