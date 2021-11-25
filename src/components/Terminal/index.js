@@ -2,8 +2,8 @@ import { connect } from 'react-redux'
 
 import './style.scss'
 
-const renderData = (text) => {
-  return text.split('--rc-newline--').map((line, i) => <div key={i}><pre>{line}</pre></div>)
+const renderData = (data) => {
+  return data.map((line, i) => <div key={i}><pre>{line}</pre></div>)
 }
 
 const Terminal = (props) => {
