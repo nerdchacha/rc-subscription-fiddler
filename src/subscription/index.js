@@ -4,7 +4,7 @@ const subscribe = (config, appendToConsole) => {
   if (config.transportType === 'pubnub') {
     pubnubSubscribe(config, appendToConsole)
   } else {
-    console.log('Unsupported')
+    appendToConsole({text: 'This feature is unsupported right now', canCopy: false})
   }
 }
 

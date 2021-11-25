@@ -1,7 +1,8 @@
 import { connect } from 'react-redux'
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCopy } from '@fortawesome/free-solid-svg-icons'
+
+import Tooltip from '../Tooltip'
 
 import './style.scss'
 
@@ -14,7 +15,12 @@ const Terminal = (props) => {
     return data.map((line, i) => (
       <div key={i} className="console-line">
         <pre>{line.text}</pre>
-        { line.canCopy ? <FontAwesomeIcon onClick={handleCopy(i)} icon={faCopy} /> : '' }
+        { line.canCopy ? 
+        (
+          <Tooltip title="copy" placement='top'>
+            <span><FontAwesomeIcon onClick={handleCopy(i)} icon={faCopy} /></span>
+          </Tooltip>
+        ) : '' }
       </div>
     )
   )}

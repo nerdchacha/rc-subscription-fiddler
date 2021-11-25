@@ -1,8 +1,10 @@
 import { combineReducers } from 'redux'
 import console from './console'
+import configuration from './configuration'
 
 const rootReducer = combineReducers({
-  console
+  console,
+  configuration
 })
 
 export default rootReducer

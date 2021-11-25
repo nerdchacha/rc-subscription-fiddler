@@ -42,6 +42,7 @@ const Form = (props) => {
     {},
   );
   const validationSchema = createValidationSchema(props)
+  const otherButtons = props.otherButtons || []
   return (
     <Formik
       initialValues={initialVaues}
@@ -51,9 +52,12 @@ const Form = (props) => {
     >
       {(actions) => (
         <form onSubmit={actions.handleSubmit}>
-          <div className="ringcentral-form">
+          <div className="rc-form">
             {renderFormElements(props, actions)}
-          <button className="rc-button primary" type="submit">{props.submitButtonText || 'Submit'}</button>
+            <div className="button-container">
+              <button className="rc-button primary" type="submit">{props.submitButtonText || 'Submit'}</button>
+              {otherButtons.map((button, i) => React.cloneElement(button, {key: i}))}
+            </div>
           </div>
         </form>
       )}

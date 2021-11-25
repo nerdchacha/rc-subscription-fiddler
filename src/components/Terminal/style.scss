@@ -10,6 +10,10 @@
   font-size: 12px;
   font-weight: bold;
   font-family: "Lucida Console", "Menlo", "Monaco", "Courier", monospace;
+  pre {
+    width: 95%;
+    overflow-x: scroll;
+  }
 
   .console-line {
     display: flex;

@@ -9,8 +9,7 @@ const console = (state = initialState, action) => {
       return { data: [] }
     }
     default:
-      return initialState
-      
+      return state
   }
 }
 

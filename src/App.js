@@ -1,31 +1,35 @@
-import { Row, Col } from 'react-bootstrap'
 import { Provider } from 'react-redux';
+import { Grid, Container } from '@mui/material'
+import { RcThemeProvider } from '@ringcentral/juno'
 
 import Header from './components/Header'
 import Options from './components/Options'
 import Terminal from './components/Terminal'
+import Configuration from './components/Configuration'
+
 import configureStore from './store'
 
 import './App.scss';
 
 const store = configureStore()
 
-function App() {
+function App(props) {
   return (
     <Provider store={store}>
-      <div className="rc-notification-app">
-        <Header />
-        <div className="container">
-          <Row>
-            <Col md={6}>
+      <RcThemeProvider>
+        <div className="rc-notification-app">
+          <Header />
+          <Container maxWidth="xl" space={2} className="container">
+            <Grid item md={6}>
               <Options />
-            </Col>
-            <Col md={6}>
+            </Grid>
+            <Grid item md={6}>
               <Terminal />
-            </Col>
-          </Row>
+            </Grid>
+            <Configuration />
+          </Container>
         </div>
-      </div>
+      </RcThemeProvider>
     </Provider>
   );
 }
