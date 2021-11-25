@@ -9,7 +9,7 @@ const logEventMessage = (type, event, data, appendToConsole) => {
 }
 
 const subscribe = async (config, appendToConsole) => {
-  const { serverUrl, appKey, appSecret, username, password, extension } = config
+  const { serverUrl, appKey, appSecret, username, password, extension, eventFilters } = config
   const sdk = new RC({
     server: serverUrl,
     appKey,
@@ -28,7 +28,7 @@ const subscribe = async (config, appendToConsole) => {
     appendToConsole({text: JSON.stringify(e, null, 2), canCopy: true})
   }
   appendToConsole({text: 'Attempting to start subscription'})
-  subscription.setEventFilters([['/account/~/telephony/sessions']]).register();
+  subscription.setEventFilters(eventFilters).register();
   
   platform.on(platform.events.loginSuccess, (data) => logEventMessage('PLATFORM', 'LOGIN SUCCESS', data, appendToConsole))
   platform.on(platform.events.loginError, (data) => logEventMessage('PLATFORM', 'LOGIN ERROR', data, appendToConsole))

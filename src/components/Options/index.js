@@ -9,7 +9,8 @@ const data = [{
   label: 'Server URL*',
   placeholder: 'Enter Server URL',
   initialValue: 'https://platform.devtest.ringcentral.com',
-  type: 'text',
+  options: [{name: 'Sandbox', value: 'https://platform.devtest.ringcentral.com'}, {name: 'Production', value: 'https://platform.ringcentral.com'}],  
+  type: 'select',
   yupType: 'string',
   validations: [
     {
