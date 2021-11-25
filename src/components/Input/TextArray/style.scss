@@ -1,0 +1,15 @@
+.ringcentral-form {
+  .text-array-container {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 20px;
+  }
+  button.rc-button.primary.add {
+    display: flex;
+    margin-left: 0;
+    margin-top: 10px;
+  }
+  button.rc-button.primary.remove {
+    margin-left: 10px;
+  }
+}
