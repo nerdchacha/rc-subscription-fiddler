@@ -1,4 +1,6 @@
-const RC = require('ringcentral');
+import * as RingCentral from '@ringcentral/sdk';
+import { Subscriptions } from "@ringcentral/subscriptions";
+
 
 const logEventMessage = (type, event, data, appendToConsole) => {
   appendToConsole({text: `Received ${type} event ${event}`})
@@ -10,24 +12,25 @@ const logEventMessage = (type, event, data, appendToConsole) => {
 
 const subscribe = async (config, appendToConsole) => {
   const { serverUrl, appKey, appSecret, username, password, extension, eventFilters } = config
-  const sdk = new RC({
+  const sdk = new RingCentral.SDK({
     server: serverUrl,
-    appKey,
-    appSecret
+    clientId: appKey,
+    clientSecret: appSecret,
   });
-  const platform = sdk.platform();
-  const subscription = sdk.createSubscription();
-
+  const platform = sdk.platform()
   try {
-    const response = await platform.login({ username, password, extension })
+    const response = await sdk.login({ username, password, extension })
     appendToConsole({text: 'Succesfully logged into the RingCental Account'})
-    appendToConsole({text: 'The auth API response is'})
-    appendToConsole({text: JSON.stringify(response.json(), null, 2), canCopy: true})
+    appendToConsole({text: 'User details:'})
+    appendToConsole({text: JSON.stringify(await response.json(), null, 2), canCopy: true})
   } catch (e) {
     appendToConsole({text: 'Unable to log into RingCentral Platform'})
     appendToConsole({text: JSON.stringify(e, null, 2), canCopy: true})
+    return
   }
   appendToConsole({text: 'Attempting to start subscription'})
+  const subscriptions = new Subscriptions({ sdk });
+  const subscription = subscriptions.createSubscription();
   subscription.setEventFilters(eventFilters).register();
   
   platform.on(platform.events.loginSuccess, (data) => logEventMessage('PLATFORM', 'LOGIN SUCCESS', data, appendToConsole))
