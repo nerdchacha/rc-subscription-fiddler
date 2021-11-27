@@ -1,5 +1,4 @@
 import React from 'react';
-import { useField } from 'formik';
 
 const renderOptions = (props) => {
   const { options = [], value } = props
@@ -11,17 +10,15 @@ const renderOptions = (props) => {
 }
 
 const Select = ({label, ...props}) => {
-  const [field, meta] = useField(props);
-  const { errorComponent, yupType, setFieldValue, values, validations, initialValue, ...rest } = props
+  const { errorComponent, yupType, setFieldValue, values = {}, validations, initialValue, ...rest } = props
+  const value = values && props.name ? values[props.name] : ''
   return (
     <>
-      <label htmlFor={props.id || props.name}>{label}</label>
-      <select className="select-input" {...field} {...rest}>
+      <label className="rc-label" htmlFor={props.id || props.name}>{label}</label>
+      <select className="rc-input select-input" value={value} {...rest}>
         {renderOptions(props)}
       </select>
-      {meta.touched && meta.error ? (
-        <div className="error">{meta.error}</div>
-      ) : null}
+      {errorComponent}
     </>
   );
 }
