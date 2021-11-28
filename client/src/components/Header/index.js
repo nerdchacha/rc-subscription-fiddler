@@ -16,11 +16,12 @@ const Header = (props) => {
   return (
     <header className="rc-header">
       <div className="icon-container">
-        <Tooltip title="Open configuration">
+        {/* TODO: remove */}
+        {/* <Tooltip title="Open configuration">
           <span onClick={openConfiguration}>
             <FontAwesomeIcon icon={faCogs} color="white" size="2x" />
           </span>
-        </Tooltip>
+        </Tooltip> */}
       </div>
     </header>
   )

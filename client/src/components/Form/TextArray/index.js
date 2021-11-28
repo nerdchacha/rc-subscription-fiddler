@@ -9,7 +9,7 @@ const TextArray = (props) => {
   const listOfValues = values[id]
   return (
       <>
-        <label htmlFor={props.id || props.name}>{label}</label>
+        <label className="rc-label" htmlFor={props.id || props.name}>{label}</label>
         <FieldArray name={id}>
           {({ push, remove }) => {
             const addToList = (e) => {
@@ -27,17 +27,17 @@ const TextArray = (props) => {
               const error = props.error || []
               return (
                 <div key={index} className="text-array-container">
-                  <div>
+                  <>
                     <input
                       type="text"
                       value={value}
                       name={`${id}[${index}]`}
                       onChange={onChange}
                       onBlur={onBlur}
-                      className="text-array-item"
+                      className="rc-input text-array-item"
                     />
                     {touched[index] && error[index] ? (<div className="error">{error[index]}</div>) : null}
-                  </div>
+                  </>
                   {listOfValues.length > 1 ? <button className="remove rc-button primary" onClick={removeFromList(index)}><FontAwesomeIcon icon={faMinus} /></button> : ''}
                 </div>
               )})}

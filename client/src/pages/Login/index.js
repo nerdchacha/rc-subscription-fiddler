@@ -170,21 +170,36 @@ const Login = (props) => {
     }]
   }]
 
-  const handleSubmit = ({ serverUrl, appKey, appSecret }) => {
+  const passwordLogin = async (platform, {username, password, extension}) => {
+    try {
+      await platform.login({ username, password, extension })
+      props.setLoggedIn(true)
+      props.push('/')
+    } catch (e) {
+      props.setLoggedIn(false)
+      console.error(e.stack || e.message);
+      alert('Auth error\n\n' + e.message);
+    }
+  }
+
+  const threeLeggedLogin = async (platform) => {
+    try {
+      const tokenResponse = await platform.loginWindow({ url: platform.loginUrl({ implicit: false, usePKCE: false }), origin: process.env.REACT_APP_SERVER_BASE_URL })
+      await platform.login(tokenResponse)
+      props.setLoggedIn(true)
+      props.push('/')
+    } catch (e) {
+      props.setLoggedIn(false)
+      console.error(e.stack || e.message);
+      alert('Auth error\n\n' + e.message);
+    }
+  }
+
+  const handleSubmit = ({ serverUrl, appKey, appSecret, loginType, username, password, extension }) => {
     const sdk = createSDK({ serverUrl, appKey, appSecret })
     const platform = sdk.platform()
-    platform
-      .loginWindow({ url: platform.loginUrl({ implicit: false, usePKCE: false }), origin: process.env.REACT_APP_SERVER_BASE_URL })
-      .then(platform.login.bind(platform))
-      .then(() => {
-        props.setLoggedIn(true)
-        props.push('/')
-      })
-      .catch(function(e) {
-        props.setLoggedIn(false)
-        console.error(e.stack || e.message);
-        alert('Auth error\n\n' + e.message);
-      });
+    if (loginType === '3LeggedLogin') { threeLeggedLogin(platform) }
+    else { passwordLogin(platform, { username, password, extension }) }
   }
 
   return (
