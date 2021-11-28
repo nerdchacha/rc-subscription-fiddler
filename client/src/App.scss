@@ -3,6 +3,7 @@
     position: relative;
     top: 60px;
     display: flex;
+    min-height: 100vh;
   }
 }
 
@@ -33,6 +34,7 @@
   padding: 10px 0 3px;
   font-weight: 700;
   display: flex;
+  margin-bottom: 3px;
 }
 
 input.rc-input[type='email'],

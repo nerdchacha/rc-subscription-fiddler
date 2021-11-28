@@ -1,7 +1,8 @@
 import React from 'react';
 import { Formik } from 'formik';
 
-import { createYupSchema } from '../../../yup/schemaCreator';
+import Button from '../Button'
+import { createYupSchema } from '../../yup/schemaCreator';
 import fieldMap from './fieldMap';
 
 import './style.scss'
@@ -37,25 +38,26 @@ const renderFormElements = (props, actions) => {
 }
 
 const Form = (props) => {
-  const initialVaues = props.data.reduce(
+  const { data = [], otherButtons = [], handleSubmit, submitButtonText = 'Submit', hideSubmitButton } = props
+  const initialVaues = data.reduce(
     (seed, { id, initialValue = '' }) => Object.assign({}, seed, { [id]: initialValue }),
     {},
   );
-  const validationSchema = createValidationSchema(props)
-  const otherButtons = props.otherButtons || []
+  const validationSchema = createValidationSchema(props) 
+  const renderSubmitButton = hideSubmitButton ? '' : <Button className="primary" type="submit" text={submitButtonText}></Button>
   return (
     <Formik
       initialValues={initialVaues}
       validateOnMount
       validationSchema={validationSchema}
-      onSubmit={(values) => props.handleSubmit(values)}
+      onSubmit={handleSubmit}
     >
       {(actions) => (
         <form onSubmit={actions.handleSubmit}>
           <div className="rc-form">
             {renderFormElements(props, actions)}
             <div className="button-container">
-              <button className="rc-button primary" type="submit">{props.submitButtonText || 'Submit'}</button>
+              {renderSubmitButton}
               {otherButtons.map((button, i) => React.cloneElement(button, {key: i}))}
             </div>
           </div>
