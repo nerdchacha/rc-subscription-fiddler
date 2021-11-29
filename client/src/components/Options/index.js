@@ -2,7 +2,7 @@ import { connect } from 'react-redux'
 
 import Form from '../Form';
 import subscribe from '../../subscription';
-import { appendToConsole, clearConsole, openConfigurationModal } from '../../actions'
+import { appendToConsole, clearConsole } from '../../actions'
 
 const data = [{
   id: 'eventFilters',
@@ -56,10 +56,6 @@ const data = [{
 
 const Options = (props) => {
   const handleSubmit = (values) => {
-    if (!Object.keys(props.configurationData).length) {
-      props.openConfigurationModal();
-      return
-    }
     props.clearConsole()
     subscribe({...props.configurationData, ...values}, props.appendToConsole)
   }
@@ -73,7 +69,6 @@ const mapStateToProps = (state) => ({
 
 
 const mapDispatchToProps = (dispatch) => ({
-  openConfigurationModal: () => dispatch(openConfigurationModal()),
   appendToConsole: ({text, canCopy = false}) => dispatch(appendToConsole(text, canCopy)),
   clearConsole: () => dispatch(clearConsole())
 })

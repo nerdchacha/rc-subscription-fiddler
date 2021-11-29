@@ -8,7 +8,7 @@ import Terminal from '../../components/Terminal'
 
 import './style.scss'
 
-const Fiddler = ({ isLoggedIn, push }) => {
+const Notifications = ({ isLoggedIn, push }) => {
   useEffect(() => {
     if (!isLoggedIn) { return push('/login') }
   }, [isLoggedIn])
@@ -31,4 +31,4 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
   push: (path) => dispatch(push(path))
 })
-export default connect(mapStateToProps, mapDispatchToProps)(Fiddler)
+export default connect(mapStateToProps, mapDispatchToProps)(Notifications)

@@ -3,13 +3,14 @@ import { persistStore, persistReducer } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
 import { routerMiddleware } from 'connected-react-router'
 import { createBrowserHistory } from 'history'
+import thunk from 'redux-thunk'
 
 import createRootReducer from './reducer'
 
 export const history = createBrowserHistory()
 
 const enhancers = []
-const middleware = [routerMiddleware(history)]
+const middleware = [thunk, routerMiddleware(history)]
 
 if (process.env.NODE_ENV === 'development') {
   const devToolsExtension = window.__REDUX_DEVTOOLS_EXTENSION__
@@ -26,7 +27,7 @@ const composedEnhancers = compose(
 
 const persistConfig = {
   key: 'rc-subscription-fiddler-root',
-  whitelist: ['configuration'],
+  whitelist: ['auth'],
   storage,
 }
 

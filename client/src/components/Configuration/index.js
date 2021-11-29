@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 
-import Form from '../Input/Form';
+import Form from '../Form';
 import Modal from '../Modal'
 import { closeConfigurationModal, setConfigurationData } from '../../actions'
 

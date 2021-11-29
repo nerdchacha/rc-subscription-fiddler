@@ -1,10 +1,8 @@
 import { connect } from 'react-redux'
 import { RcCard, RcCardContent, RcTypography, RcAlert } from '@ringcentral/juno'
-import { push } from 'connected-react-router'
 
 import Form from '../../components/Form'
-import { createSDK } from '../../sdk'
-import { setLoggedIn } from '../../actions'
+import { setLoginDetails, login } from '../../actions'
 
 import './style.scss'
 
@@ -168,38 +166,12 @@ const Login = (props) => {
       className: 'primary',
       text: 'Login'
     }]
+
   }]
 
-  const passwordLogin = async (platform, {username, password, extension}) => {
-    try {
-      await platform.login({ username, password, extension })
-      props.setLoggedIn(true)
-      props.push('/')
-    } catch (e) {
-      props.setLoggedIn(false)
-      console.error(e.stack || e.message);
-      alert('Auth error\n\n' + e.message);
-    }
-  }
-
-  const threeLeggedLogin = async (platform) => {
-    try {
-      const tokenResponse = await platform.loginWindow({ url: platform.loginUrl({ implicit: false, usePKCE: false }), origin: process.env.REACT_APP_SERVER_BASE_URL })
-      await platform.login(tokenResponse)
-      props.setLoggedIn(true)
-      props.push('/')
-    } catch (e) {
-      props.setLoggedIn(false)
-      console.error(e.stack || e.message);
-      alert('Auth error\n\n' + e.message);
-    }
-  }
-
   const handleSubmit = ({ serverUrl, appKey, appSecret, loginType, username, password, extension }) => {
-    const sdk = createSDK({ serverUrl, appKey, appSecret })
-    const platform = sdk.platform()
-    if (loginType === '3LeggedLogin') { threeLeggedLogin(platform) }
-    else { passwordLogin(platform, { username, password, extension }) }
+    props.setLoginDetails({ serverUrl, appKey, appSecret, loginType, username, password, extension })
+    props.login()
   }
 
   return (
@@ -217,8 +189,8 @@ const Login = (props) => {
 }
 
 const mapDispatchToProps = (dispatch) => ({
-  push: (path) => dispatch(push(path)),
-  setLoggedIn: (isLoggedIn) => dispatch(setLoggedIn(isLoggedIn))
+  setLoginDetails: (details) => dispatch(setLoginDetails(details)),
+  login: () => (dispatch(login()))
 })
 
 export default connect(null, mapDispatchToProps)(Login)
