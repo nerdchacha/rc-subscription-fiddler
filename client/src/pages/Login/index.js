@@ -18,44 +18,6 @@ const Login = (props) => {
   )
 
   const formData = [{
-    id: 'serverUrl',
-    label: 'Environment*',
-    placeholder: 'Enter Server URL',
-    initialValue: 'https://platform.devtest.ringcentral.com',
-    options: [{name: 'Sandbox', value: 'https://platform.devtest.ringcentral.com'}, {name: 'Production', value: 'https://platform.ringcentral.com'}],  
-    type: 'select',
-    yupType: 'string',
-    validations: [
-      {
-        type: 'required',
-        params: ['Server URL required'],
-      }
-    ],
-  }, {
-    id: 'appKey',
-    label: 'App Key*',
-    placeholder: 'Enter App Key',
-    type: 'text',
-    yupType: 'string',
-    validations: [
-      {
-        type: 'required',
-        params: ['App Key required'],
-      }
-    ],
-  }, {
-    id: 'appSecret',
-    label: 'App Secret*',
-    placeholder: 'Enter App Secret',
-    type: 'text',
-    yupType: 'string',
-    validations: [
-      {
-        type: 'required',
-        params: ['App Secret required'],
-      }
-    ],
-  }, {
     id: 'loginType',
     label: 'Login Type*',
     type: 'select',
@@ -80,22 +42,6 @@ const Login = (props) => {
         '===': ['3LeggedLogin', { var: 'loginType' }]
       }
     },
-  }, {
-    id: 'buttonList3LeggedLogin',
-    type: 'buttonList',
-    dependsOn: {
-      fields: [
-        { name: 'loginType', parser: { type: 'string' } }
-      ],
-      operator: {
-        '===': ['3LeggedLogin', { var: 'loginType' }]
-      }
-    },
-    items: [{
-      type: 'submit',
-      className: 'primary',
-      text: 'Authorization Code'
-    }]
   }, {
     id: 'username',
     label: 'User Name*',
@@ -150,6 +96,60 @@ const Login = (props) => {
         '===': ['password', { var: 'loginType' }]
       }
     },
+  }, {
+    id: 'serverUrl',
+    label: 'Environment*',
+    placeholder: 'Enter Server URL',
+    initialValue: 'https://platform.devtest.ringcentral.com',
+    options: [{name: 'Sandbox', value: 'https://platform.devtest.ringcentral.com'}, {name: 'Production', value: 'https://platform.ringcentral.com'}],  
+    type: 'select',
+    yupType: 'string',
+    validations: [
+      {
+        type: 'required',
+        params: ['Server URL required'],
+      }
+    ],
+  }, {
+    id: 'appKey',
+    label: 'App Key*',
+    placeholder: 'Enter App Key',
+    type: 'text',
+    yupType: 'string',
+    validations: [
+      {
+        type: 'required',
+        params: ['App Key required'],
+      }
+    ],
+  }, {
+    id: 'appSecret',
+    label: 'App Secret*',
+    placeholder: 'Enter App Secret',
+    type: 'text',
+    yupType: 'string',
+    validations: [
+      {
+        type: 'required',
+        params: ['App Secret required'],
+      }
+    ],
+  }, {
+    id: 'buttonList3LeggedLogin',
+    type: 'buttonList',
+    dependsOn: {
+      fields: [
+        { name: 'loginType', parser: { type: 'string' } }
+      ],
+      operator: {
+        '===': ['3LeggedLogin', { var: 'loginType' }]
+      }
+    },
+    items: [{
+      type: 'submit',
+      className: 'primary',
+      text: 'Authorization Code'
+    }]
   }, {
     id: 'buttonListPassword',
     type: 'buttonList',

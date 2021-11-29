@@ -12,10 +12,10 @@ const Terminal = (props) => {
   }
 
   const renderData = (data) => {
-    return data.map((line, i) => (
+    return data.map(({type, text, canCopy}, i) => (
       <div key={i} className="console-line">
-        <pre>{line.text}</pre>
-        { line.canCopy ? 
+        <pre className={type}>{text}</pre>
+        { canCopy ? 
         (
           <Tooltip title="copy" placement='top'>
             <span><FontAwesomeIcon onClick={handleCopy(i)} icon={faCopy} /></span>

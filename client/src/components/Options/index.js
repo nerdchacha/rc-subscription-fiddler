@@ -69,7 +69,7 @@ const mapStateToProps = (state) => ({
 
 
 const mapDispatchToProps = (dispatch) => ({
-  appendToConsole: ({text, canCopy = false}) => dispatch(appendToConsole(text, canCopy)),
+  appendToConsole: ({text, canCopy = false, type = 'text'}) => dispatch(appendToConsole(text, canCopy, type)),
   clearConsole: () => dispatch(clearConsole())
 })
 

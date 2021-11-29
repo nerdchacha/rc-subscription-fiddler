@@ -1,6 +1,7 @@
 .rc-form {
   .text-array-container {
     display: flex;
+    flex-direction: column;
     align-items: flex-start;
     margin-bottom: 20px;
   }

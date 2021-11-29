@@ -9,7 +9,7 @@ export const GLOBAL_SET_IS_LOADING = 'GLOBAL_SET_IS_LOADING'
 export const AUTH_SET_LOGIN_DETAILS = 'AUTH_SET_LOGIN_DETAILS'
 export const AUTH_SET_ACCESS_TOKEN = 'AUTH_SET_ACCESS_TOKEN'
 
-export const appendToConsole = (text, canCopy) => ({type: CONOSLE_APPEND, data: {text, canCopy}})
+export const appendToConsole = (text, canCopy, type = 'text') => ({type: CONOSLE_APPEND, data: {text, canCopy, type}})
 export const clearConsole = () => ({type: CONSOLE_CLEAR})
 export const openConfigurationModal = () => ({type: 'showModal', showModal: true})
 export const closeConfigurationModal = () => ({type: 'showModal', showModal: false})
@@ -28,7 +28,7 @@ export const login = () => async (dispatch, getState) => {
   let tokenResponse
   try {
     if (loginType === '3LeggedLogin') {
-      const codeResponse = await platform.loginWindow({ url: platform.loginUrl({ implicit: false, usePKCE: false }), origin: process.env.REACT_APP_SERVER_BASE_URL })
+      const codeResponse = await platform.loginWindow({ url: platform.loginUrl({ implicit: false, usePKCE: true }), origin: process.env.REACT_APP_SERVER_BASE_URL })
       tokenResponse = await platform.login(codeResponse)
     } else {
       tokenResponse = await platform.login({ username, password, extension })

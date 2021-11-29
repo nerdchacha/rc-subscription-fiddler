@@ -3,7 +3,7 @@ import { Subscriptions } from "@ringcentral/subscriptions";
 import { getSDK } from '../sdk'
 
 const logEventMessage = (type, event, data, appendToConsole) => {
-  appendToConsole({text: `Received ${type} event ${event}`})
+  appendToConsole({text: `Received ${type} event ${event}`, type: 'success'})
   if (data) {
     appendToConsole({text: 'Event Data'})
     appendToConsole({text: JSON.stringify(data, null, 2), canCopy: true})
@@ -14,20 +14,21 @@ const subscribe = async (config, appendToConsole) => {
   const { eventFilters } = config
   const sdk = getSDK()
   const platform = sdk.platform()
-  // try {
-  //   const response = await sdk.login({ username, password, extension })
-  //   appendToConsole({text: 'Succesfully logged into the RingCental Account'})
-  //   appendToConsole({text: 'User details:'})
-  //   appendToConsole({text: JSON.stringify(await response.json(), null, 2), canCopy: true})
-  // } catch (e) {
-  //   appendToConsole({text: 'Unable to log into RingCentral Platform'})
-  //   appendToConsole({text: JSON.stringify(e, null, 2), canCopy: true})
-  //   return
-  // }
-  appendToConsole({text: 'Attempting to start subscription'})
+  appendToConsole({text: 'Attempting to start subscription', type: 'info'})
   const subscriptions = new Subscriptions({ sdk });
-  const subscription = subscriptions.createSubscription();
-  subscription.setEventFilters(eventFilters).register();
+  let subscription
+  try {
+    subscription = subscriptions.createSubscription();
+    await subscription.setEventFilters(eventFilters).register();
+  } catch (e) {
+    appendToConsole({text: 'Unable to register subscription', type: 'error'})
+    appendToConsole({text: JSON.stringify(e, null, 2), canCopy: true})
+    return
+  }
+  appendToConsole({text: 'Subscription successful', type: 'success'})
+  appendToConsole({text: 'Subscription details', type: 'info'})
+  appendToConsole({text: JSON.stringify(subscription._subscription, null, 2), canCopy: true})
+  appendToConsole({text: 'Listening for notifications', type: 'info'})
   
   platform.on(platform.events.loginSuccess, (data) => logEventMessage('PLATFORM', 'LOGIN SUCCESS', data, appendToConsole))
   platform.on(platform.events.loginError, (data) => logEventMessage('PLATFORM', 'LOGIN ERROR', data, appendToConsole))

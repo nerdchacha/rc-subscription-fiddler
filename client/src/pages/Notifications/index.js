@@ -14,10 +14,10 @@ const Notifications = ({ isLoggedIn, push }) => {
   }, [isLoggedIn])
   return (
     <>
-      <Grid item md={6} className="grid-item">
+      <Grid item md={4} className="grid-item">
         <Options />
       </Grid>
-      <Grid item md={6} className="grid-item">
+      <Grid item md={8} className="grid-item">
         <Terminal />
       </Grid>
     </>

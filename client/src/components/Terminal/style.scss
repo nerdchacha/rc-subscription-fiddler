@@ -13,6 +13,15 @@
   pre {
     width: 95%;
     overflow-x: auto;
+    &.info {
+      color: gold
+    }
+    &.success {
+      color: lawngreen;
+    }
+    &.error {
+      color: tomato;
+    }
   }
 
   .console-line {
