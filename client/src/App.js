@@ -1,6 +1,7 @@
 import { Provider } from 'react-redux';
 import { RcThemeProvider } from '@ringcentral/juno'
 import { ConnectedRouter } from 'connected-react-router'
+import { PersistGate } from 'redux-persist/integration/react'
 
 import Fiddler from './Fiddler'
 import configureStore, { history } from './store'
@@ -8,17 +9,19 @@ import { monkeyPathFetch } from './fetch'
 
 import './App.scss';
 
-const store = configureStore()
+const { store, persistor } = configureStore()
 monkeyPathFetch({dispatch: store.dispatch})
 
 function App() {
   return (
     <Provider store={store}>
-      <ConnectedRouter history={history}>
-        <RcThemeProvider>
-          <Fiddler />
-        </RcThemeProvider>
-      </ConnectedRouter>
+      <PersistGate loading={null} persistor={persistor}>
+        <ConnectedRouter history={history}>
+          <RcThemeProvider>
+            <Fiddler />
+          </RcThemeProvider>
+        </ConnectedRouter>
+      </PersistGate>
     </Provider>
   );
 }

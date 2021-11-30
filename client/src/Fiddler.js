@@ -10,7 +10,7 @@ import Subscriptions from './pages/Subscriptions'
 import { loginUsingAccessToken } from './actions'
 
 const Fiddler = (props) => {
-  useEffect(() => { props.loginUsingAccessToken() }, [])
+  useEffect(() => props.loginUsingAccessToken(), [])
 
   return (
     <div className="rc-notification-app">

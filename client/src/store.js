@@ -35,8 +35,8 @@ const persistedReducer = persistReducer(persistConfig, createRootReducer(history
 
 const configureStore = (state = {}) => {
   const store = createStore(persistedReducer, state, composedEnhancers);
-  persistStore(store)
-  return store
+  const persistor = persistStore(store)
+  return { store, persistor }
 }
 
 export default configureStore
