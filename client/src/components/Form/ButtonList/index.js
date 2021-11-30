@@ -1,9 +1,9 @@
-import Button from '../../Button'
+import { RcButton } from '@ringcentral/juno'
 
 const ButtonList = ({ items }) => {
   return (
     <div className="button-list-container">
-      {items.map((props, i) => <Button {...props} key={i} />)}
+      {items.map(({text, ...rest}, i) => <RcButton {...rest} key={i}>{text}</RcButton>)}
     </div>
   )
 }

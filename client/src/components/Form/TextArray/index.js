@@ -1,6 +1,7 @@
 import { FieldArray } from 'formik'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus, faMinus } from '@fortawesome/free-solid-svg-icons'
+import { faPlus, faTimes } from '@fortawesome/free-solid-svg-icons'
+import { RcButton } from '@ringcentral/juno'
 
 import './style.scss'
 
@@ -27,7 +28,7 @@ const TextArray = (props) => {
               const error = props.error || []
               return (
                 <div key={index} className="text-array-container">
-                  <>
+                  <div>
                     <input
                       type="text"
                       value={value}
@@ -37,13 +38,15 @@ const TextArray = (props) => {
                       className="rc-input text-array-item"
                     />
                     {touched[index] && error[index] ? (<div className="error">{error[index]}</div>) : null}
-                  </>
-                  {listOfValues.length > 1 ? <button className="remove rc-button primary" onClick={removeFromList(index)}><FontAwesomeIcon icon={faMinus} /></button> : ''}
+                  </div>
+                  {listOfValues.length > 1 ? (
+                    <FontAwesomeIcon onClick={removeFromList(index)} size="xs" icon={faTimes} color="tomato" />
+                  ) : ''}
                 </div>
               )})}
-              <button className="add rc-button primary" onClick={addToList}>
+              <RcButton radius="zero" size="small" onClick={addToList}>
                 <FontAwesomeIcon icon={faPlus} />
-              </button>
+              </RcButton>
             </>
           )}}
         </FieldArray>

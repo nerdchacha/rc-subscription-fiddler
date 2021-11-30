@@ -1,8 +1,8 @@
 import pubnubSubscribe from './pubnub'
 
-const subscribe = (config, appendToConsole) => {
-  if (config.transportType === 'pubnub') {
-    pubnubSubscribe(config, appendToConsole)
+const subscribe = (data, appendToConsole) => {
+  if (data.transportType === 'pubnub') {
+    pubnubSubscribe(data, appendToConsole)
   } else {
     appendToConsole({text: 'This feature is unsupported right now', canCopy: false})
   }

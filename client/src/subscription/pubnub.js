@@ -10,8 +10,8 @@ const logEventMessage = (type, event, data, appendToConsole) => {
   }
 }
 
-const subscribe = async (config, appendToConsole) => {
-  const { eventFilters } = config
+const subscribe = async (data, appendToConsole) => {
+  const { eventFilters } = data
   const sdk = getSDK()
   const platform = sdk.platform()
   appendToConsole({text: 'Attempting to start subscription', type: 'info'})

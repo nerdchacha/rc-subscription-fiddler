@@ -1,8 +1,8 @@
 import { connect } from 'react-redux'
 
-import Form from '../Form';
-import subscribe from '../../subscription';
-import { appendToConsole, clearConsole } from '../../actions'
+import Form from '../../../components/Form';
+import subscribe from '../../../subscription';
+import { appendToConsole } from '../../../actions'
 
 const data = [{
   id: 'eventFilters',
@@ -54,23 +54,17 @@ const data = [{
   ],
 }]
 
-const Options = (props) => {
+const CreateSubscriptionForm = (props) => {
   const handleSubmit = (values) => {
-    props.clearConsole()
-    subscribe({...props.configurationData, ...values}, props.appendToConsole)
+    subscribe({...values}, props.appendToConsole)
   }
 
   return <Form data={data} submitButtonText='Subscribe' handleSubmit={handleSubmit} />
 }
 
-const mapStateToProps = (state) => ({
-  configurationData: state.configuration.data,
-})
-
 
 const mapDispatchToProps = (dispatch) => ({
-  appendToConsole: ({text, canCopy = false, type = 'text'}) => dispatch(appendToConsole(text, canCopy, type)),
-  clearConsole: () => dispatch(clearConsole())
+  appendToConsole: ({text, canCopy = false, type = 'text'}) => dispatch(appendToConsole({text, canCopy, type, name: 'createSubscription'})),
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(Options)
+export default connect(null, mapDispatchToProps)(CreateSubscriptionForm)

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Formik } from 'formik';
+import { RcButton } from '@ringcentral/juno'
 
-import Button from '../Button'
 import { createYupSchema } from '../../yup/schemaCreator';
 import fieldMap from './fieldMap';
 
@@ -44,7 +44,7 @@ const Form = (props) => {
     {},
   );
   const validationSchema = createValidationSchema(props) 
-  const renderSubmitButton = hideSubmitButton ? '' : <Button className="primary" type="submit" text={submitButtonText}></Button>
+  const renderSubmitButton = hideSubmitButton ? '' : <RcButton radius='zero' style={{marginTop: 20}} type="submit">{submitButtonText}</RcButton>
   return (
     <Formik
       initialValues={initialVaues}

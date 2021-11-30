@@ -1,16 +1,16 @@
 import { combineReducers } from 'redux'
 import { connectRouter } from 'connected-react-router'
 
-import console from './console'
+import consoleReducer from './console'
 import configuration from './configuration'
-import auth from './auth'
-import global from './global'
+import authReducer from './auth'
+import globalReducer from './global'
 
 const createRootReducer = (history) => combineReducers({
-  auth,
-  console,
-  configuration,
-  global,
+  auth: authReducer,
+  console: consoleReducer,
+  // configuration,
+  global: globalReducer,
   router: connectRouter(history),
 })
 

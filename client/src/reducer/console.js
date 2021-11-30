@@ -1,19 +1,27 @@
 import { CONOSLE_APPEND, CONSOLE_CLEAR } from '../actions'
 
-const initialState = { data: [] } 
+const initialState = {
+  createSubscription: { data: [] },
+  getSubscriptions: { data: [] },
+  getSubscription: { data: [] },
+  updateSubscription: { data: [] },
+  removeSubscription: { data: [] },
+} 
 
-const console = (state = initialState, action) => {
+const consoleReducer = (state = initialState, action) => {
   switch (action.type) {
     case CONOSLE_APPEND: {
-      return { data: [...state.data, action.data] }
+      const nextData = [...state[action.name].data, action.data]
+      return { ...state, [action.name]: { data: nextData } }
     }
     case CONSOLE_CLEAR: {
-      return { data: [] }
+      const nextConfig = { [action.name]: { data: [] } }
+      return { ...state, ...nextConfig }
     }
     default:
       return state
   }
 }
 
-export default console
+export default consoleReducer
 

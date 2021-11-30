@@ -1,5 +1,5 @@
 import { connect } from 'react-redux'
-import { RcCard, RcCardContent, RcTypography, RcAlert } from '@ringcentral/juno'
+import { RcCard, RcCardContent, RcAlert } from '@ringcentral/juno'
 
 import Form from '../../components/Form'
 import { setLoginDetails, login } from '../../actions'
@@ -135,36 +135,13 @@ const Login = (props) => {
       }
     ],
   }, {
-    id: 'buttonList3LeggedLogin',
+    id: 'buttonList',
     type: 'buttonList',
-    dependsOn: {
-      fields: [
-        { name: 'loginType', parser: { type: 'string' } }
-      ],
-      operator: {
-        '===': ['3LeggedLogin', { var: 'loginType' }]
-      }
-    },
     items: [{
       type: 'submit',
       className: 'primary',
-      text: 'Authorization Code'
-    }]
-  }, {
-    id: 'buttonListPassword',
-    type: 'buttonList',
-    dependsOn: {
-      fields: [
-        { name: 'loginType', parser: { type: 'string' } }
-      ],
-      operator: {
-        '===': ['password', { var: 'loginType' }]
-      }
-    },
-    items: [{
-      type: 'submit',
-      className: 'primary',
-      text: 'Login'
+      text: 'Login',
+      radius: 'zero'
     }]
 
   }]
@@ -184,9 +161,6 @@ const Login = (props) => {
     <>
        <RcCard classes={{root: "login-card-container"}} style={{width: 600}}>
          <RcCardContent>
-          <RcTypography gutterBottom variant="display1">
-            Login
-          </RcTypography>
           <Form data={formData} handleSubmit={handleSubmit} hideSubmitButton></Form>
         </RcCardContent>
       </RcCard>

@@ -10,8 +10,8 @@ export const AUTH_SET_LOGIN_DETAILS = 'AUTH_SET_LOGIN_DETAILS'
 export const AUTH_SET_ACCESS_TOKEN = 'AUTH_SET_ACCESS_TOKEN'
 export const GLOBAL_REQUEST_RESPONSE_SET_DATA = 'GLOBAL_REQUEST_RESPONSE_SET_DATA'
 
-export const appendToConsole = (text, canCopy, type = 'text') => ({type: CONOSLE_APPEND, data: {text, canCopy, type}})
-export const clearConsole = () => ({type: CONSOLE_CLEAR})
+export const appendToConsole = ({text, canCopy, type = 'text', name}) => ({type: CONOSLE_APPEND, data: {text, canCopy, type}, name})
+export const clearConsole = (name) => ({type: CONSOLE_CLEAR, name})
 export const openConfigurationModal = () => ({type: 'showModal', showModal: true})
 export const closeConfigurationModal = () => ({type: 'showModal', showModal: false})
 export const setConfigurationData = (data) => ({type: 'setConfiguration', data})
@@ -74,7 +74,6 @@ export const logout = () => async (dispatch) => {
   const sdk = getSDK()
   dispatch(globalSetIsLoading(true))
   await sdk.platform().logout()
-  dispatch(clearConsole())
   dispatch(globalSetIsLoading(false))
   dispatch(setLoggedIn(false))
   dispatch(setAccessToken({}))

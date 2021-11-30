@@ -112,7 +112,7 @@ const Configuration = (props) => {
 
 const mapStateToProps = (state) => ({
   showConfigurationModal: state.configuration.showModal,
-  configurationData: state.configuration.data,
+  configurationData: [],
 })
 
 const mapDispatchToProps = (dispatch) => ({
