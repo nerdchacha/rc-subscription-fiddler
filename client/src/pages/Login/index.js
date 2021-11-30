@@ -174,6 +174,12 @@ const Login = (props) => {
     props.login()
   }
 
+  const savedState = props.loginDetails
+  formData.forEach((item) => {
+    if (!savedState[item.id]) { return }
+    item.initialValue = savedState[item.id]
+  })
+
   return (
     <>
        <RcCard classes={{root: "login-card-container"}} style={{width: 600}}>
@@ -188,9 +194,13 @@ const Login = (props) => {
   )
 }
 
+const mapStateToProps  = (state) => ({
+  loginDetails: state.auth.loginDetails
+})
+
 const mapDispatchToProps = (dispatch) => ({
   setLoginDetails: (details) => dispatch(setLoginDetails(details)),
   login: () => (dispatch(login()))
 })
 
-export default connect(null, mapDispatchToProps)(Login)
+export default connect(mapStateToProps, mapDispatchToProps)(Login)

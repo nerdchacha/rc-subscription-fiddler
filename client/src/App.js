@@ -1,13 +1,15 @@
 import { Provider } from 'react-redux';
 import { RcThemeProvider } from '@ringcentral/juno'
 import { ConnectedRouter } from 'connected-react-router'
-import Fiddler from './Fiddler'
 
+import Fiddler from './Fiddler'
 import configureStore, { history } from './store'
+import { monkeyPathFetch } from './fetch'
 
 import './App.scss';
 
 const store = configureStore()
+monkeyPathFetch({dispatch: store.dispatch})
 
 function App() {
   return (

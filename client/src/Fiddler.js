@@ -2,32 +2,35 @@ import { useEffect } from 'react'
 import { connect } from 'react-redux';
 import { Container } from '@mui/material'
 import { Route } from 'react-router-dom'
+import { RcLoading } from '@ringcentral/juno'
  
 import Header from './components/Header'
-import Configuration from './components/Configuration'
 import Login from './pages/Login'
-import Notifications from './pages/Notifications'
-import { relogin } from './actions'
+import Subscriptions from './pages/Subscriptions'
+import { loginUsingAccessToken } from './actions'
 
 const Fiddler = (props) => {
-  useEffect(() => {
-    props.relogin()
-  }, [])
+  useEffect(() => { props.loginUsingAccessToken() }, [])
 
   return (
     <div className="rc-notification-app">
       <Header />
-      <Container maxWidth="xl" space={2} className="container">
-      <Route exact path="/login" component={Login} />
-      <Route exact path="/" component={Notifications} />
-        <Configuration />
-      </Container>
+      <RcLoading loading={props.isLoading} keepMounted>
+        <Container maxWidth="xl" space={2} className="container">
+        <Route exact path="/login" component={Login} />
+        <Route path="/" component={Subscriptions} />
+        </Container>
+      </RcLoading>
     </div>
   )
 }
 
-const mapDispatchToProps = (dispatch) => ({
-  relogin: () => dispatch(relogin()),
+const mapStateToProps = (state) => ({
+  isLoading: state.global.isLoading
 })
 
-export default connect(null, mapDispatchToProps)(Fiddler)
+const mapDispatchToProps = (dispatch) => ({
+  loginUsingAccessToken: () => dispatch(loginUsingAccessToken()),
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(Fiddler)

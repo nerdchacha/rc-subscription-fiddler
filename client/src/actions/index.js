@@ -8,6 +8,7 @@ export const AUTH_SET_LOGGED_IN = 'AUTH_SET_LOGGED_IN'
 export const GLOBAL_SET_IS_LOADING = 'GLOBAL_SET_IS_LOADING'
 export const AUTH_SET_LOGIN_DETAILS = 'AUTH_SET_LOGIN_DETAILS'
 export const AUTH_SET_ACCESS_TOKEN = 'AUTH_SET_ACCESS_TOKEN'
+export const GLOBAL_REQUEST_RESPONSE_SET_DATA = 'GLOBAL_REQUEST_RESPONSE_SET_DATA'
 
 export const appendToConsole = (text, canCopy, type = 'text') => ({type: CONOSLE_APPEND, data: {text, canCopy, type}})
 export const clearConsole = () => ({type: CONSOLE_CLEAR})
@@ -18,13 +19,14 @@ export const setLoggedIn = (isLoggedIn) => ({type: AUTH_SET_LOGGED_IN, isLoggedI
 export const globalSetIsLoading = (isLoading) => ({type: GLOBAL_SET_IS_LOADING, isLoading})
 export const setLoginDetails = (details) => ({type: AUTH_SET_LOGIN_DETAILS, details})
 export const setAccessToken = (token) => ({type: AUTH_SET_ACCESS_TOKEN, token})
+export const globalSetRequestResponseData = (data) => ({type: GLOBAL_REQUEST_RESPONSE_SET_DATA, data})
 
 export const login = () => async (dispatch, getState) => {
   const { auth: { loginDetails } } = getState()
   const { serverUrl, appKey, appSecret, loginType, username, password, extension } = loginDetails
   const sdk = createSDK({ serverUrl, appKey, appSecret })
   const platform = sdk.platform()
-  globalSetIsLoading(true)
+  dispatch(globalSetIsLoading(true))
   let tokenResponse
   try {
     if (loginType === '3LeggedLogin') {
@@ -36,28 +38,28 @@ export const login = () => async (dispatch, getState) => {
     const token = await tokenResponse.json()
     dispatch(setLoggedIn(true))
     dispatch(setAccessToken(token))
-    dispatch(push('/'))
+    dispatch(globalSetIsLoading(false))
+    dispatch(push('/create-subscription'))
   } catch (e) {
     // TODO: Show this somewhere
     console.log(e.message)
     dispatch(setLoggedIn(false))
-    dispatch(setAccessToken({}))
-  } finally {
     dispatch(globalSetIsLoading(false))
+    dispatch(setAccessToken({}))
   }
 }
 
-export const relogin = () => async (dispatch, getState) => {
+export const loginUsingAccessToken = () => async (dispatch, getState) => {
   const { auth: { loginDetails, isLoggedIn, token } } = getState()
   if (!isLoggedIn) { return }
   const { serverUrl, appKey, appSecret } = loginDetails
   const sdk = createSDK({ serverUrl, appKey, appSecret })
   const platform = sdk.platform()
-  globalSetIsLoading(true)
+  dispatch(globalSetIsLoading(true))
   try {
     await platform.login(token)
     dispatch(setLoggedIn(true))
-    dispatch(push('/'))
+    dispatch(push('/create-subscription'))
   } catch (e) {
     // TODO: Show this somewhere
     console.log(e.message)
@@ -70,7 +72,10 @@ export const relogin = () => async (dispatch, getState) => {
 
 export const logout = () => async (dispatch) => {
   const sdk = getSDK()
+  dispatch(globalSetIsLoading(true))
   await sdk.platform().logout()
+  dispatch(clearConsole())
+  dispatch(globalSetIsLoading(false))
   dispatch(setLoggedIn(false))
   dispatch(setAccessToken({}))
   dispatch(push('/login'))
