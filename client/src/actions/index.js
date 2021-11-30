@@ -78,4 +78,19 @@ export const logout = () => async (dispatch) => {
   dispatch(setLoggedIn(false))
   dispatch(setAccessToken({}))
   dispatch(push('/login'))
-} 
+}
+
+export const getSubscriptions = () => async (dispatch) => {
+  const sdk = getSDK();
+  const platform = sdk.platform()
+  dispatch(appendToConsole({text: 'Fetching all subscriptions...', type: 'info', name: 'getSubscriptions'}))
+  try {
+    const response = await platform.get('/restapi/v1.0/subscription')
+    const json = await response.json()
+    dispatch(appendToConsole({text: 'Successfully fetched all subscriptions', type: 'success', name: 'getSubscriptions'}))
+    dispatch(appendToConsole({text: JSON.stringify(json, null, 2), canCopy: true, name: 'getSubscriptions'}))
+  } catch (e) {
+    dispatch(appendToConsole({text: 'Error fetching subscription', type: 'error', name: 'getSubscriptions'}))
+    dispatch(appendToConsole({text: e.message, canCopy: true, name: 'getSubscriptions'}))
+  }
+}

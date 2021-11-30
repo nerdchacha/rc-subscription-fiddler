@@ -14,7 +14,7 @@ const subscribe = async (data, appendToConsole) => {
   const { eventFilters } = data
   const sdk = getSDK()
   const platform = sdk.platform()
-  appendToConsole({text: 'Attempting to start subscription', type: 'info'})
+  appendToConsole({text: 'Attempting to start subscription...', type: 'info'})
   const subscriptions = new Subscriptions({ sdk });
   let subscription
   try {
@@ -28,7 +28,7 @@ const subscribe = async (data, appendToConsole) => {
   appendToConsole({text: 'Subscription successful', type: 'success'})
   appendToConsole({text: 'Subscription details', type: 'info'})
   appendToConsole({text: JSON.stringify(subscription._subscription, null, 2), canCopy: true})
-  appendToConsole({text: 'Listening for notifications', type: 'info'})
+  appendToConsole({text: 'Listening for notifications...', type: 'info'})
   
   platform.on(platform.events.loginSuccess, (data) => logEventMessage('PLATFORM', 'LOGIN SUCCESS', data, appendToConsole))
   platform.on(platform.events.loginError, (data) => logEventMessage('PLATFORM', 'LOGIN ERROR', data, appendToConsole))
