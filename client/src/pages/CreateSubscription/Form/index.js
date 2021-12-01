@@ -1,8 +1,8 @@
 import { connect } from 'react-redux'
 
 import Form from '../../../components/Form';
-import subscribe from '../../../subscription';
-import { appendToConsole } from '../../../actions'
+// import subscribe from '../../../subscription';
+import { createSubscription } from '../../../actions'
 
 const data = [{
   id: 'eventFilters',
@@ -55,8 +55,8 @@ const data = [{
 }]
 
 const CreateSubscriptionForm = (props) => {
-  const handleSubmit = (values) => {
-    subscribe({...values}, props.appendToConsole)
+  const handleSubmit = ({eventFilters}) => {
+    props.createSubscription({eventFilters})
   }
 
   return <Form data={data} submitButtonText='Subscribe' handleSubmit={handleSubmit} />
@@ -64,7 +64,7 @@ const CreateSubscriptionForm = (props) => {
 
 
 const mapDispatchToProps = (dispatch) => ({
-  appendToConsole: ({text, canCopy = false, type = 'text'}) => dispatch(appendToConsole({text, canCopy, type, name: 'createSubscription'})),
+  createSubscription: (data) => dispatch(createSubscription(data)),
 })
 
 export default connect(null, mapDispatchToProps)(CreateSubscriptionForm)

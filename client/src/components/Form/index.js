@@ -2,7 +2,7 @@ import React from 'react';
 import { Formik } from 'formik';
 import { RcButton } from '@ringcentral/juno'
 
-import { createYupSchema } from '../../yup/schemaCreator';
+import { createYupSchema } from '../Form/yup/schemaCreator';
 import fieldMap from './fieldMap';
 
 import './style.scss'

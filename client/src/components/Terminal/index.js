@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCopy, faBan } from '@fortawesome/free-solid-svg-icons'
+import { faCopy, faEraser } from '@fortawesome/free-solid-svg-icons'
 
 import Tooltip from '../Tooltip'
 
@@ -29,7 +29,7 @@ const Terminal = (props) => {
     <div className="rc-terminal">
       <div className="action-container">
         <Tooltip title="Clear console" placement="bottom">
-          <span><FontAwesomeIcon icon={faBan} size="2x" onClick={clearConsole} /></span>
+          <span><FontAwesomeIcon icon={faEraser} size="2x" onClick={clearConsole} /></span>
         </Tooltip>
       </div>
       {renderData(props.data)}

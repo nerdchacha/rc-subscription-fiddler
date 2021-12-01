@@ -1,6 +1,6 @@
 import { push } from 'connected-react-router'
 
-import { createSDK, getSDK } from '../sdk'
+import * as ringcentral from '../ringcentral'
 
 export const CONOSLE_APPEND = 'CONSOLE_APPEND'
 export const CONSOLE_CLEAR = 'CONSOLE_CLEAR'
@@ -24,21 +24,11 @@ export const globalSetRequestResponseData = (data) => ({type: GLOBAL_REQUEST_RES
 export const login = () => async (dispatch, getState) => {
   const { auth: { loginDetails } } = getState()
   const { serverUrl, appKey, appSecret, loginType, username, password, extension } = loginDetails
-  const sdk = createSDK({ serverUrl, appKey, appSecret })
-  const platform = sdk.platform()
-  dispatch(globalSetIsLoading(true))
-  let tokenResponse
   try {
-    if (loginType === '3LeggedLogin') {
-      const codeResponse = await platform.loginWindow({ url: platform.loginUrl({ implicit: false, usePKCE: true }), origin: process.env.REACT_APP_SERVER_BASE_URL })
-      tokenResponse = await platform.login(codeResponse)
-    } else {
-      tokenResponse = await platform.login({ username, password, extension })
-    }
-    const token = await tokenResponse.json()
+    ringcentral.setup({serverUrl, appKey, appSecret, logger: logger(dispatch)})
+    const token = await ringcentral.login({type: loginType, username, password, extension})
     dispatch(setLoggedIn(true))
     dispatch(setAccessToken(token))
-    dispatch(globalSetIsLoading(false))
     dispatch(push('/create-subscription'))
   } catch (e) {
     // TODO: Show this somewhere
@@ -53,11 +43,10 @@ export const loginUsingAccessToken = () => async (dispatch, getState) => {
   const { auth: { loginDetails, isLoggedIn, token } } = getState()
   if (!isLoggedIn) { return }
   const { serverUrl, appKey, appSecret } = loginDetails
-  const sdk = createSDK({ serverUrl, appKey, appSecret })
-  const platform = sdk.platform()
+  ringcentral.setup({serverUrl, appKey, appSecret, logger: logger(dispatch)})
   dispatch(globalSetIsLoading(true))
   try {
-    await platform.login(token)
+    ringcentral.setToken(token)
     dispatch(setLoggedIn(true))
     dispatch(push('/create-subscription'))
   } catch (e) {
@@ -71,18 +60,30 @@ export const loginUsingAccessToken = () => async (dispatch, getState) => {
 }
 
 export const logout = () => async (dispatch) => {
-  const sdk = getSDK()
   dispatch(globalSetIsLoading(true))
-  await sdk.platform().logout()
+  await ringcentral.logout()
   dispatch(globalSetIsLoading(false))
   dispatch(setLoggedIn(false))
   dispatch(setAccessToken({}))
   dispatch(push('/login'))
 }
 
+export const createSubscription = ({eventFilters}) => async (dispatch) => {
+  dispatch(appendToConsole({text: 'Attempting to start subscription...', type: 'info', name: 'createSubscription'}))
+  try {
+    await ringcentral.subscribe({eventFilters})
+    dispatch(appendToConsole({text: 'Subscription successful', type: 'success', name: 'createSubscription'}))
+    dispatch(appendToConsole({text: 'Subscription details', type: 'info', name: 'createSubscription'}))
+    dispatch(appendToConsole({text: JSON.stringify(ringcentral.subscription._subscription, null, 2), canCopy: true, name: 'createSubscription'}))
+    dispatch(appendToConsole({text: 'Listening for notifications...', type: 'info', name: 'createSubscription'}))
+  } catch (e)  {
+    dispatch(appendToConsole({text: 'Unable to register subscription', type: 'error', name: 'createSubscription'}))
+    dispatch(appendToConsole({text: JSON.stringify(e, null, 2), canCopy: true, name: 'createSubscription'}))
+  }
+}
+
 export const getSubscriptions = () => async (dispatch) => {
-  const sdk = getSDK();
-  const platform = sdk.platform()
+  const platform = ringcentral.platform()
   dispatch(appendToConsole({text: 'Fetching all subscriptions...', type: 'info', name: 'getSubscriptions'}))
   try {
     const response = await platform.get('/restapi/v1.0/subscription')
@@ -90,7 +91,28 @@ export const getSubscriptions = () => async (dispatch) => {
     dispatch(appendToConsole({text: 'Successfully fetched all subscriptions', type: 'success', name: 'getSubscriptions'}))
     dispatch(appendToConsole({text: JSON.stringify(json, null, 2), canCopy: true, name: 'getSubscriptions'}))
   } catch (e) {
-    dispatch(appendToConsole({text: 'Error fetching subscription', type: 'error', name: 'getSubscriptions'}))
+    dispatch(appendToConsole({text: 'Error fetching subscriptions', type: 'error', name: 'getSubscriptions'}))
     dispatch(appendToConsole({text: e.message, canCopy: true, name: 'getSubscriptions'}))
   }
+}
+
+export const getSubscription = (subscriptionId) => async (dispatch) => {
+  const platform = ringcentral.platform()
+  dispatch(appendToConsole({text: `Fetching subscription for Subscription Id ${subscriptionId}...`, type: 'info', name: 'getSubscription'}))
+  try {
+    const response = await platform.get(`/restapi/v1.0/subscription/${subscriptionId}`)
+    const json = await response.json()
+    dispatch(appendToConsole({text: 'Successfully fetched subscription', type: 'success', name: 'getSubscription'}))
+    dispatch(appendToConsole({text: JSON.stringify(json, null, 2), canCopy: true, name: 'getSubscription'}))
+  } catch (e) {
+    dispatch(appendToConsole({text: 'Error fetching subscription', type: 'error', name: 'getSubscription'}))
+    dispatch(appendToConsole({text: e.message, canCopy: true, name: 'getSubscription'}))
+  }
+}
+
+const logger = (dispatch) => ({source, event, data, type}) => {
+  const consoleName = source === 'SUBSCRIPTION' ? 'createSubscription' : 'platform'
+  dispatch(appendToConsole({text: `Received ${source} event ${event}`, type, name: consoleName}))
+  dispatch(appendToConsole({text: 'Event Data', name: consoleName}))
+  dispatch(appendToConsole({text: JSON.stringify(data, null, 2), canCopy: true, name: consoleName}))
 }

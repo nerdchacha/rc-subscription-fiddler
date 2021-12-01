@@ -5,8 +5,8 @@ import './style.scss'
 
 const options = [
   {text: 'Get Subscriptions', link: '/get-subscriptions'},
-  {text: 'Create Subscription', link: '/create-subscription'},
   {text: 'Get Subscription', link: '/get-subscription'},
+  {text: 'Create Subscription', link: '/create-subscription'},
   {text: 'Update Subscription', link: '/update-subscription'},
   {text: 'Remove Subscription', link: '/remove-subscription'}
 ]

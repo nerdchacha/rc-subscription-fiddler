@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { evaluateJsonLogicOperator } from '../../jsonLogic/utils';
+import { evaluateJsonLogicOperator } from '../Form/jsonLogic/utils';
 
 export default function withShowElementComponent(InnerComponent) {
   return function WithShowElementComponent(props) {

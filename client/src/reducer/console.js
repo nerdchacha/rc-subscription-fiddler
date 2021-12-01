@@ -6,6 +6,7 @@ const initialState = {
   getSubscription: { data: [] },
   updateSubscription: { data: [] },
   removeSubscription: { data: [] },
+  platform: {data: []},
 } 
 
 const consoleReducer = (state = initialState, action) => {
