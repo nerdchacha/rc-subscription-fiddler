@@ -15,6 +15,7 @@ const withShowElementAndErrorComponent = compose(
 
 const typeMap = {
   text: withShowElementAndErrorComponent(Text),
+  number: withShowElementAndErrorComponent(Text),
   password: withShowElementAndErrorComponent(Text),
   select: withShowElementAndErrorComponent(Select),
   textArray: TextArray,

@@ -8,7 +8,7 @@ const options = [
   {text: 'Get Subscription', link: '/get-subscription'},
   {text: 'Create Subscription', link: '/create-subscription'},
   {text: 'Update Subscription', link: '/update-subscription'},
-  {text: 'Remove Subscription', link: '/remove-subscription'}
+  {text: 'Cancel Subscription', link: '/cancel-subscription'}
 ]
 
 const SubscriptionMenu = (props) => {

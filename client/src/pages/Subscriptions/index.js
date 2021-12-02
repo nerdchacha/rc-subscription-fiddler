@@ -5,8 +5,8 @@ import SubscriptionMenu from '../../components/SubscriptionMenu'
 import CreateSubscription from '../CreateSubscription'
 import GetSubscriptions from '../GetSubscriptions'
 import GetSubscription from '../GetSubscription'
-import UpdateSubscriptions from '../UpdateSubscriptions'
-import RemoveSubscriptions from '../RemoveSubscriptions'
+import UpdateSubscription from '../UpdateSubscription'
+import CancelSubscription from '../CancelSubscription'
 
 const Subscriptions = () => {
   return (
@@ -19,8 +19,8 @@ const Subscriptions = () => {
           <Route exact path="/create-subscription" component={CreateSubscription} />
           <Route exact path="/get-subscriptions" component={GetSubscriptions} />
           <Route exact path="/get-subscription" component={GetSubscription} />
-          <Route exact path="/update-subscription" component={UpdateSubscriptions} />
-          <Route exact path="/remove-subscription" component={RemoveSubscriptions} />
+          <Route exact path="/update-subscription" component={UpdateSubscription} />
+          <Route exact path="/cancel-subscription" component={CancelSubscription} />
         </Switch>
       </Grid>
     </>

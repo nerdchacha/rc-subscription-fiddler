@@ -1,8 +1,4 @@
-import { connect } from 'react-redux'
-
 import Form from '../../../components/Form';
-// import subscribe from '../../../subscription';
-import { createSubscription } from '../../../actions'
 
 const data = [{
   id: 'eventFilters',
@@ -54,17 +50,8 @@ const data = [{
   ],
 }]
 
-const CreateSubscriptionForm = (props) => {
-  const handleSubmit = ({eventFilters}) => {
-    props.createSubscription({eventFilters})
-  }
-
+const CreateSubscriptionForm = ({handleSubmit}) => {
   return <Form data={data} submitButtonText='Subscribe' handleSubmit={handleSubmit} />
 }
 
-
-const mapDispatchToProps = (dispatch) => ({
-  createSubscription: (data) => dispatch(createSubscription(data)),
-})
-
-export default connect(null, mapDispatchToProps)(CreateSubscriptionForm)
+export default CreateSubscriptionForm

@@ -5,7 +5,7 @@ const initialState = {
   getSubscriptions: { data: [] },
   getSubscription: { data: [] },
   updateSubscription: { data: [] },
-  removeSubscription: { data: [] },
+  cancelSubscription: { data: [] },
   platform: {data: []},
 } 
 

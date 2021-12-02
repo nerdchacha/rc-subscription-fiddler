@@ -27,7 +27,7 @@ const composedEnhancers = compose(
 
 const persistConfig = {
   key: 'rc-subscription-fiddler-root',
-  whitelist: ['auth'],
+  whitelist: ['auth', 'subscription'],
   storage,
 }
 

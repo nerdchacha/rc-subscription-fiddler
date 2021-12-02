@@ -7,10 +7,13 @@ import { RcLoading } from '@ringcentral/juno'
 import Header from './components/Header'
 import Login from './pages/Login'
 import Subscriptions from './pages/Subscriptions'
-import { loginUsingAccessToken } from './actions'
+import { loginUsingAccessToken, reregisterSubscriptionEvents } from './actions'
 
 const Fiddler = (props) => {
-  useEffect(() => props.loginUsingAccessToken(), [])
+  useEffect(() => {
+    props.loginUsingAccessToken()
+    props.reregisterSubscriptionEvents()
+  }, [])
 
   return (
     <div className="rc-notification-app">
@@ -31,6 +34,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   loginUsingAccessToken: () => dispatch(loginUsingAccessToken()),
+  reregisterSubscriptionEvents: () => dispatch(reregisterSubscriptionEvents()),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Fiddler)
