@@ -4,7 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "concurrently \"cd client && npm start\" \"cd server && npm run dev\""
+    "deploy": "npm run build:client",
+    "install": "npm run install-dependencies:client && npm run install-dependencies:server",
+    "install-dependencies:client": "cd client && npm install",
+    "install-dependencies:server": "cd server && npm install",
+    "build:client": "cd client && npm run build"
   },
   "repository": {
     "type": "git",
