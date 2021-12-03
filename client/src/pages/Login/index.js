@@ -12,7 +12,7 @@ const Login = (props) => {
     <p>In order to use this demo your application must have:</p>
       <ol>
         <li>Appropriate <strong>GRANT_TYPE</strong> permissions</li>
-        <li><strong>REDIRECT_URI</strong> that strictly matches this one <strong>{`${process.env.REACT_APP_SERVER_BASE_URL}/redirect.html`}</strong></li>
+        <li><strong>REDIRECT_URI</strong> that strictly matches this one <strong>{`${window.location.origin}/redirect.html`}</strong></li>
       </ol>
     </RcAlert>
   )
@@ -143,7 +143,6 @@ const Login = (props) => {
       text: 'Login',
       radius: 'zero'
     }]
-
   }]
 
   const handleSubmit = ({ serverUrl, appKey, appSecret, loginType, username, password, extension }) => {

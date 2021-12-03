@@ -7,6 +7,7 @@ import GetSubscriptions from '../GetSubscriptions'
 import GetSubscription from '../GetSubscription'
 import UpdateSubscription from '../UpdateSubscription'
 import CancelSubscription from '../CancelSubscription'
+import { ROUTES } from '../../constants'
 
 const Subscriptions = () => {
   return (
@@ -16,11 +17,11 @@ const Subscriptions = () => {
       </Grid>
       <Grid item lg={11} md={6} className="grid-item">
         <Switch>
-          <Route exact path="/create-subscription" component={CreateSubscription} />
-          <Route exact path="/get-subscriptions" component={GetSubscriptions} />
-          <Route exact path="/get-subscription" component={GetSubscription} />
-          <Route exact path="/update-subscription" component={UpdateSubscription} />
-          <Route exact path="/cancel-subscription" component={CancelSubscription} />
+          <Route exact path={ROUTES.CREATE_SUBSCRIPTION} component={CreateSubscription} />
+          <Route exact path={ROUTES.GET_SUBSCRIPTIONS} component={GetSubscriptions} />
+          <Route exact path={ROUTES.GET_SUBSCRIPTION} component={GetSubscription} />
+          <Route exact path={ROUTES.UPDATE_SUBSCRIPTION} component={UpdateSubscription} />
+          <Route exact path={ROUTES.CANCEL_SUBSCRIPTION} component={CancelSubscription} />
         </Switch>
       </Grid>
     </>

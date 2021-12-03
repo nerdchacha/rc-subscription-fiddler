@@ -1,6 +1,7 @@
 import { push } from 'connected-react-router'
 
 import * as ringcentral from '../ringcentral'
+import { ROUTES } from '../constants'
 
 export const CONOSLE_APPEND = 'CONSOLE_APPEND'
 export const CONSOLE_CLEAR = 'CONSOLE_CLEAR'
@@ -11,6 +12,7 @@ export const AUTH_SET_ACCESS_TOKEN = 'AUTH_SET_ACCESS_TOKEN'
 export const GLOBAL_REQUEST_RESPONSE_SET_DATA = 'GLOBAL_REQUEST_RESPONSE_SET_DATA'
 export const SUBSCRIPTION_SAVE = 'SUBSCRIPTION_SAVE'
 export const SUBSCRIPTION_REMOVE = 'SUBSCRIPTION_REMOVE'
+export const SUBSCRIPTION_CLEAR = 'SUBSCRIPTION_CLEAR'
 
 export const appendToConsole = ({text, canCopy, type = 'text', name}) => ({type: CONOSLE_APPEND, data: {text, canCopy, type}, name})
 export const clearConsole = (name) => ({type: CONSOLE_CLEAR, name})
@@ -24,16 +26,19 @@ export const setAccessToken = (token) => ({type: AUTH_SET_ACCESS_TOKEN, token})
 export const globalSetRequestResponseData = (data) => ({type: GLOBAL_REQUEST_RESPONSE_SET_DATA, data})
 export const subscriptionSave = (data) => ({type: SUBSCRIPTION_SAVE, data})
 export const subscriptionRemove = (id) => ({type: SUBSCRIPTION_REMOVE, id})
+export const subscriptionClear = () => ({type: SUBSCRIPTION_CLEAR})
 
 export const login = () => async (dispatch, getState) => {
   const { auth: { loginDetails } } = getState()
   const { serverUrl, appKey, appSecret, loginType, username, password, extension } = loginDetails
   try {
-    ringcentral.setup({serverUrl, appKey, appSecret, platformEventListener: sdkEventListener(dispatch), subscriptionEventListener: sdkEventListener(dispatch)})
+    ringcentral.setup({serverUrl, appKey, appSecret, platformEventListener: platformEventListener(dispatch), subscriptionEventListener: subscriptionEventListener(dispatch)})
+    dispatch(globalSetIsLoading(true))
     const token = await ringcentral.login({type: loginType, username, password, extension})
     dispatch(setLoggedIn(true))
     dispatch(setAccessToken(token))
-    dispatch(push('/create-subscription'))
+    dispatch(globalSetIsLoading(false))
+    dispatch(push(ROUTES.CREATE_SUBSCRIPTION))
   } catch (e) {
     // TODO: Show this somewhere
     console.log(e.message)
@@ -47,13 +52,13 @@ export const loginUsingAccessToken = () => async (dispatch, getState) => {
   const { auth: { loginDetails, isLoggedIn, token } } = getState()
   if (!isLoggedIn) { return }
   const { serverUrl, appKey, appSecret } = loginDetails
-  ringcentral.setup({serverUrl, appKey, appSecret, platformEventListener: sdkEventListener(dispatch), subscriptionEventListener: sdkEventListener(dispatch)})
+  ringcentral.setup({serverUrl, appKey, appSecret, platformEventListener: platformEventListener(dispatch), subscriptionEventListener: subscriptionEventListener(dispatch)})
   dispatch(globalSetIsLoading(true))
   // TODO: reset subscription using stored data
   try {
     ringcentral.setToken(token)
     dispatch(setLoggedIn(true))
-    dispatch(push('/create-subscription'))
+    dispatch(push(ROUTES.CREATE_SUBSCRIPTION))
   } catch (e) {
     // TODO: Show this somewhere
     console.log(e.message)
@@ -64,14 +69,22 @@ export const loginUsingAccessToken = () => async (dispatch, getState) => {
   }
 }
 
-export const logout = () => async (dispatch) => {
-  //TODO: Remove all subscriptions
+export const logout = () => async (dispatch, getState) => {
   dispatch(globalSetIsLoading(true))
+  // Remove all subscriptions on logout
+  const { subscription: allSubscriptions } = getState()
+  const removeAllSubscriptionsRequest = Object.keys(allSubscriptions).map((key) => {
+    const subscription = ringcentral.subscriptions.createSubscription()
+      subscription.setSubscription(allSubscriptions[key])
+      return subscription.remove()
+  })
+  await Promise.all(removeAllSubscriptionsRequest)
+  dispatch(subscriptionClear())
   await ringcentral.logout()
   dispatch(globalSetIsLoading(false))
   dispatch(setLoggedIn(false))
   dispatch(setAccessToken({}))
-  dispatch(push('/login'))
+  dispatch(push(ROUTES.LOGIN))
 }
 
 export const createSubscription = ({eventFilters}) => async (dispatch) => {
@@ -138,7 +151,11 @@ export const updateSubscription = ({subscriptionId, eventFilters}) => async (dis
 
 export const cancelSubscription = (subscriptionId) => async (dispatch, getState) => {
   const { subscription: allSUbscriptions } = getState()
-  const subscriptionData = allSUbscriptions[subscriptionId]
+  let subscriptionData = allSUbscriptions[subscriptionId]
+  if (!subscriptionData) {
+    const response = await ringcentral.platform.get(`/restapi/v1.0/subscription/${subscriptionId}`)
+    subscriptionData = await response.json()
+  }
   const subscription = ringcentral.subscriptions.createSubscription()
   subscription.setSubscription(subscriptionData)
   dispatch(appendToConsole({text: 'Cancelling subscription...', name: 'cancelSubscription', type: 'info'}))
@@ -152,19 +169,34 @@ export const cancelSubscription = (subscriptionId) => async (dispatch, getState)
 
 export const reregisterSubscriptionEvents = () => async (dispatch, getState) => {
   const { subscription: allSUbscriptions } = getState()
-  Object.keys(allSUbscriptions).forEach((subscriptionData) => {
-    const subscription = ringcentral.subscriptions.createSubscription()
-    subscription.setSubscription(allSUbscriptions[subscriptionData])
-    ringcentral.registerSubscriptionEvents(subscription)
-  })
+  try {
+    Object.keys(allSUbscriptions).forEach((key) => {
+      const subscription = ringcentral.subscriptions.createSubscription()
+      subscription.setSubscription(allSUbscriptions[key])
+      ringcentral.registerSubscriptionEvents(subscription)
+    })
+  } catch (e) {
+    //TODO: Unable to reregister some subscription. Maybe they are dead on the server?
+    console.log(e.message)
+  }
 }
 
-const sdkEventListener = (dispatch) => ({source, event, data, type}) => {
-  const consoleName = source === 'SUBSCRIPTION' ? 'createSubscription' : 'platform'
-  dispatch(appendToConsole({text: `Received ${source} event ${event}`, type, name: consoleName}))
-  dispatch(appendToConsole({text: 'Event Data', name: consoleName}))
-  dispatch(appendToConsole({text: JSON.stringify(data, null, 2), canCopy: true, name: consoleName}))
-  if (event === 'RENEW ERROR') {
-    // TODO: Do what needs to be done here
+const platformEventListener = (dispatch) => ({source, event, data, type}) => {
+  dispatch(appendToConsole({text: `Received ${source} event ${event}`, type, name: 'platform'}))
+  dispatch(appendToConsole({text: 'Event Data', name: 'platform'}))
+  dispatch(appendToConsole({text: JSON.stringify(data, null, 2), canCopy: true, name: 'platform'}))
+}
+
+const subscriptionEventListener = (dispatch) => ({source: subscription, event, data, type}) => {
+  dispatch(appendToConsole({text: `Received ${subscription.constructor.name} event ${event}`, type, name: 'createSubscription'}))
+  dispatch(appendToConsole({text: 'Event Data', name: 'createSubscription'}))
+  dispatch(appendToConsole({text: JSON.stringify(data, null, 2), canCopy: true, name: 'createSubscription'}))
+  if (event === subscription.events.renewError) {
+    // // Update redux store
+    dispatch(subscriptionRemove(subscription.subscription().id))
+  }
+  if (event === subscription.events.renewSuccess) {
+    // Update redux store
+    dispatch(subscriptionSave(subscription.subscription()))
   }
 }

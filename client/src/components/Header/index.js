@@ -11,7 +11,7 @@ const Header = ({isLoggedIn, logout}) => {
     <RcAppBar position="sticky">
       <Toolbar sx={{justifyContent: 'end'}}>
           <Button color="inherit" onClick={logout}>
-            <RcTypography variant="body2">Logout</RcTypography>
+            {isLoggedIn ? <RcTypography variant="body2">Logout</RcTypography> : ''}
           </Button>
       </Toolbar>
     </RcAppBar>

@@ -1,4 +1,4 @@
-import { SUBSCRIPTION_SAVE, SUBSCRIPTION_REMOVE } from '../actions'
+import { SUBSCRIPTION_SAVE, SUBSCRIPTION_REMOVE, SUBSCRIPTION_CLEAR } from '../actions'
 
 const initialState = {} 
 
@@ -11,6 +11,9 @@ const subscription = (state = initialState, action) => {
       const newState = {...state}
       delete newState[action.id]
       return newState
+    }
+    case SUBSCRIPTION_CLEAR: {
+      return initialState
     }
     default:
       return state

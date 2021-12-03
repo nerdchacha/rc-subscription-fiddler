@@ -9,6 +9,7 @@
   font-size: 12px;
   font-weight: bold;
   font-family: "Lucida Console", "Menlo", "Monaco", "Courier", monospace;
+  position: relative;
   pre {
     width: 95%;
     overflow-x: auto;
@@ -35,6 +36,9 @@
     display: flex;
     align-items: center;
     justify-content: flex-end;
+    position: sticky;
+    right: 0;
+    top: 0;
     svg {
       cursor: pointer;
     }

@@ -171,7 +171,8 @@ module.exports = function (webpackEnv) {
     // This means they will be the "root" imports that are included in JS bundle.
     entry:
       isEnvDevelopment && !shouldUseReactRefresh
-        ? [
+        ? {
+          main: [
             // Include an alternative client for WebpackDevServer. A client's job is to
             // connect to WebpackDevServer by a socket and get notified about changes.
             // When you save a file, the client will either apply hot updates (in case
@@ -192,8 +193,13 @@ module.exports = function (webpackEnv) {
             // We include the app code last so that if there is a runtime error during
             // initialization, it doesn't blow up the WebpackDevServer client, and
             // changing JS code would still trigger a refresh.
-          ]
-        : paths.appIndexJs,
+          ],
+          redirect: [webpackDevClientEntry, paths.ringcentralRedirect],
+        }
+        : {
+          main: paths.appIndexJs,
+          redirect: paths.ringcentralRedirect,
+        },
     output: {
       // The build folder.
       path: isEnvProduction ? paths.appBuild : undefined,
@@ -203,7 +209,7 @@ module.exports = function (webpackEnv) {
       // In development, it does not produce real files.
       filename: isEnvProduction
         ? 'static/js/[name].[contenthash:8].js'
-        : isEnvDevelopment && 'static/js/bundle.js',
+        : isEnvDevelopment && 'static/js/[name].bundle.js',
       // TODO: remove this when upgrading to webpack 5
       futureEmitAssets: true,
       // There are also additional JS chunk files if you use code splitting.
@@ -557,14 +563,20 @@ module.exports = function (webpackEnv) {
       ],
     },
     plugins: [
+      new HtmlWebpackPlugin({
+        filename: 'redirect.html',
+        chunks: ['redirect'],
+        template: 'src/redirect/index.html',
+        inject: true
+      }),
       // Generates an `index.html` file with the <script> injected.
-      new HtmlWebpackPlugin({filename: 'redirect.html'}),
       new HtmlWebpackPlugin(
         Object.assign(
           {},
           {
             inject: true,
             template: paths.appHtml,
+            chunks: ['main']
           },
           isEnvProduction
             ? {

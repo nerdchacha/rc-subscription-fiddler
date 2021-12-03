@@ -18,24 +18,24 @@ export const setup = ({ serverUrl, appKey, appSecret, platformEventListener = de
     server: serverUrl,
     clientId: appKey,
     clientSecret: appSecret,
-    redirectUri: `${process.env.REACT_APP_SERVER_BASE_URL}/redirect.html`
+    redirectUri: `${window.location.origin}/redirect.html`
   });
   _platformEventListener = platformEventListener
   _subscriptionEventListener = subscriptionEventListener
   platform = sdk.platform()
   subscriptions = new Subscriptions({ sdk });
-  platform.on(platform.events.loginSuccess, (data) => _platformEventListener({source: 'PLATFORM', event: 'LOGIN SUCCESS', data, type: 'success'}))
-  platform.on(platform.events.loginError, (data) => _platformEventListener({source: 'PLATFORM', event: 'LOGIN ERROR', data, type: 'error'}))
-  platform.on(platform.events.logoutSuccess, (data) => _platformEventListener({source: 'PLATFORM', event: 'LOGOUT SUCCESS', data, type: 'success'}))
-  platform.on(platform.events.logoutError, (data) => _platformEventListener({source: 'PLATFORM', event: 'LOGOUT ERROR', data, type: 'error'}))
-  platform.on(platform.events.refreshSuccess, (data) => _platformEventListener({source: 'PLATFORM', event: 'REFRESH SUCCESS', data, type: 'success'}))
-  platform.on(platform.events.refreshError, (data) => _platformEventListener({source: 'PLATFORM', event: 'REFRESH ERROR', data, type: 'error'}))
+  platform.on(platform.events.loginSuccess, (data) => _platformEventListener({source: platform, event: platform.events.loginSuccess, data, type: 'success'}))
+  platform.on(platform.events.loginError, (data) => _platformEventListener({source: platform, event: platform.events.loginError, data, type: 'error'}))
+  platform.on(platform.events.logoutSuccess, (data) => _platformEventListener({source: platform, event: platform.events.logoutSuccess, data, type: 'success'}))
+  platform.on(platform.events.logoutError, (data) => _platformEventListener({source: platform, event: platform.events.logoutError, data, type: 'error'}))
+  platform.on(platform.events.refreshSuccess, (data) => _platformEventListener({source: platform, event: platform.events.refreshSuccess, data, type: 'success'}))
+  platform.on(platform.events.refreshError, (data) => _platformEventListener({source: platform, event: platform.events.refreshError, data, type: 'error'}))
 }
 
 export const login = async ({type, username, password, extension }) => {
   let tokenResponse
   if (type === '3LeggedLogin') {
-    const codeResponse = await platform.loginWindow({ url: platform.loginUrl({ implicit: false, usePKCE: true }), origin: process.env.REACT_APP_SERVER_BASE_URL })
+    const codeResponse = await platform.loginWindow({ url: platform.loginUrl({ implicit: false, usePKCE: true }) })
     tokenResponse = await platform.login(codeResponse)
   } else {
     tokenResponse = await platform.login({ username, password, extension })
@@ -56,11 +56,11 @@ export const subscribe = async ({eventFilters}) => {
 }
 
 export const registerSubscriptionEvents = (subscription) => {
-  subscription.on(subscription.events.notification, (data) => _subscriptionEventListener({source: 'SUBSCRIPTION', event: 'NOTIFICATION', data, type: 'success'}))
-  subscription.on(subscription.events.removeSuccess, (data) => _subscriptionEventListener({source: 'SUBSCRIPTION', event: 'REMOVE SUCCESS', data, type: 'success'}))
-  subscription.on(subscription.events.removeError, (data) => _subscriptionEventListener({source: 'SUBSCRIPTION', event: 'REMOVE ERROR', data, type: 'error'}))
-  subscription.on(subscription.events.renewSuccess, (data) => _subscriptionEventListener({source: 'SUBSCRIPTION', event: 'RENEW SUCCESS', data, type: 'success'}))
-  subscription.on(subscription.events.renewError, (data) => _subscriptionEventListener({source: 'SUBSCRIPTION', event: 'RENEW ERROR', data, type: 'error'}))
-  subscription.on(subscription.events.subscribeSuccess, (data) => _subscriptionEventListener({source: 'SUBSCRIPTION', event: 'SUBSCRIPTION SUCCESS', data, type: 'success'}))
-  subscription.on(subscription.events.subscribeError, (data) => _subscriptionEventListener({source: 'SUBSCRIPTION', event: 'SUBSCRIPTION ERROR', data, type: 'error'}))
+  subscription.on(subscription.events.notification, (data) => _subscriptionEventListener({source: subscription, event: subscription.events.notification, data, type: 'success'}))
+  subscription.on(subscription.events.removeSuccess, (data) => _subscriptionEventListener({source: subscription, event: subscription.events.removeSuccess, data, type: 'success'}))
+  subscription.on(subscription.events.removeError, (data) => _subscriptionEventListener({source: subscription, event: subscription.events.removeError, data, type: 'error'}))
+  subscription.on(subscription.events.renewSuccess, (data) => _subscriptionEventListener({source: subscription, event: subscription.events.renewSuccess, data, type: 'success'}))
+  subscription.on(subscription.events.renewError, (data) => _subscriptionEventListener({source: subscription, event: subscription.events.renewError, data, type: 'error'}))
+  subscription.on(subscription.events.subscribeSuccess, (data) => _subscriptionEventListener({source: subscription, event: subscription.events.subscribeSuccess, data, type: 'success'}))
+  subscription.on(subscription.events.subscribeError, (data) => _subscriptionEventListener({source: subscription, event: subscription.events.subscribeError, data, type: 'error'}))
 }

@@ -2,13 +2,14 @@ import { Link, useLocation } from 'react-router-dom'
 import { RcDrawer } from '@ringcentral/juno'
 
 import './style.scss'
+import { ROUTES } from '../../constants'
 
 const options = [
-  {text: 'Get Subscriptions', link: '/get-subscriptions'},
-  {text: 'Get Subscription', link: '/get-subscription'},
-  {text: 'Create Subscription', link: '/create-subscription'},
-  {text: 'Update Subscription', link: '/update-subscription'},
-  {text: 'Cancel Subscription', link: '/cancel-subscription'}
+  {text: 'Get Subscriptions', link: ROUTES.GET_SUBSCRIPTIONS},
+  {text: 'Get Subscription', link: ROUTES.GET_SUBSCRIPTION},
+  {text: 'Create Subscription', link: ROUTES.CREATE_SUBSCRIPTION},
+  {text: 'Update Subscription', link: ROUTES.UPDATE_SUBSCRIPTION},
+  {text: 'Cancel Subscription', link: ROUTES.CANCEL_SUBSCRIPTION}
 ]
 
 const SubscriptionMenu = (props) => {
