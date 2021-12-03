@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "deploy": "npm run build:client",
+    "build": "cd client && npm run build",
+    "start": "node server/index.js",
     "install": "npm run install-dependencies:client && npm run install-dependencies:server",
     "install-dependencies:client": "cd client && npm install",
     "install-dependencies:server": "cd server && npm install",
