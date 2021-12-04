@@ -1,0 +1,9 @@
+client/build
+client/config
+client/node_modules
+client/scripts
+client/public
+
+server/node_modules
+
+node_modules

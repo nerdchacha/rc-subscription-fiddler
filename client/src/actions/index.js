@@ -13,6 +13,7 @@ export const GLOBAL_REQUEST_RESPONSE_SET_DATA = 'GLOBAL_REQUEST_RESPONSE_SET_DAT
 export const SUBSCRIPTION_SAVE = 'SUBSCRIPTION_SAVE'
 export const SUBSCRIPTION_REMOVE = 'SUBSCRIPTION_REMOVE'
 export const SUBSCRIPTION_CLEAR = 'SUBSCRIPTION_CLEAR'
+export const SET_IS_LOADING = 'SET_IS_LOADING'
 
 export const appendToConsole = ({text, canCopy, type = 'text', name}) => ({type: CONOSLE_APPEND, data: {text, canCopy, type}, name})
 export const clearConsole = (name) => ({type: CONSOLE_CLEAR, name})
@@ -33,7 +34,7 @@ export const login = () => async (dispatch, getState) => {
   const { serverUrl, appKey, appSecret, loginType, username, password, extension } = loginDetails
   try {
     ringcentral.setup({serverUrl, appKey, appSecret, platformEventListener: platformEventListener(dispatch), subscriptionEventListener: subscriptionEventListener(dispatch)})
-    dispatch(globalSetIsLoading(true))
+    if (loginType === 'password') { dispatch(globalSetIsLoading(true, 'auth')) }
     const token = await ringcentral.login({type: loginType, username, password, extension})
     dispatch(setLoggedIn(true))
     dispatch(setAccessToken(token))

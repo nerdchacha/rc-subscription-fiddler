@@ -3,13 +3,17 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "engines": {
+    "node": "14.x"
+  },
   "scripts": {
+    "deploy": "git push heroku master",
     "build": "cd client && npm run build",
     "start": "node server/index.js",
     "install": "npm run install-dependencies:client && npm run install-dependencies:server",
     "install-dependencies:client": "cd client && npm install",
     "install-dependencies:server": "cd server && npm install",
-    "build:client": "cd client && npm run build"
+    "format": "prettier --check --loglevel debug --config .prettierrc.json ."
   },
   "repository": {
     "type": "git",
@@ -23,7 +27,9 @@
   },
   "homepage": "https://github.com/nerdchacha/rc-subscription-fiddler#readme",
   "dependencies": {
-    "concurrently": "^6.4.0",
-    "redux-thunk": "^2.4.1"
+    "concurrently": "^6.4.0"
+  },
+  "devDependencies": {
+    "prettier": "2.5.0"
   }
 }
