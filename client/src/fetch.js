@@ -12,7 +12,7 @@ export const monkeyPathFetch = ({dispatch}) => {
   const originalFetch = window.fetch
   window.fetch = (...args) => {
     const clonedRequest = args[0].clone()
-    if (!clonedRequest.url.includes('ringcentral')) { return }
+    if (!clonedRequest.url.includes('ringcentral')) { return originalFetch(...args) }
     clonedRequest.text().then((requestBody) => {
       dispatch(globalSetRequestResponseData({method: clonedRequest.method, url: clonedRequest.url, body: requestBody, headers: convertHeadersToObject(clonedRequest.headers)}))
     })

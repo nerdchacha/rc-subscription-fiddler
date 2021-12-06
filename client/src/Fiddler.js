@@ -22,9 +22,9 @@ const Fiddler = (props) => {
       <RcLoading loading={props.isLoading} keepMounted>
         <Switch>
           <Container maxWidth="xl" space={2} className="container">
-          <Route exact path={ROUTES.LOGIN} component={Login} />
-          <Route path="/" component={Subscriptions} />
-          <Redirect to={ROUTES.GET_SUBSCRIPTIONS} />
+            <Route exact path={ROUTES.LOGIN} component={Login} />
+            <Route path="/" component={Subscriptions} />
+            <Redirect to={ROUTES.GET_SUBSCRIPTIONS} />
           </Container>
         </Switch>
       </RcLoading>
