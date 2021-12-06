@@ -74,12 +74,17 @@ export const logout = () => async (dispatch, getState) => {
   dispatch(globalSetIsLoading(true))
   // Remove all subscriptions on logout
   const { subscription: allSubscriptions } = getState()
-  const removeAllSubscriptionsRequest = Object.keys(allSubscriptions).map((key) => {
-    const subscription = ringcentral.subscriptions.createSubscription()
-      subscription.setSubscription(allSubscriptions[key])
-      return subscription.remove()
-  })
-  await Promise.all(removeAllSubscriptionsRequest)
+  try {
+    const removeAllSubscriptionsRequest = Object.keys(allSubscriptions).map((key) => {
+      const subscription = ringcentral.subscriptions.createSubscription()
+        subscription.setSubscription(allSubscriptions[key])
+        return subscription.remove()
+    })
+    await Promise.all(removeAllSubscriptionsRequest)
+  } catch (e) {
+    console.log('Unabel to clean all subscriptions')
+    console.log(e.message)
+  }
   dispatch(subscriptionClear())
   await ringcentral.logout()
   dispatch(globalSetIsLoading(false))
@@ -194,6 +199,7 @@ const subscriptionEventListener = (dispatch) => ({source: subscription, event, d
   dispatch(appendToConsole({text: JSON.stringify(data, null, 2), canCopy: true, name: 'createSubscription'}))
   if (event === subscription.events.renewError) {
     // // Update redux store
+    console.log('renew error', subscription.subscription())
     dispatch(subscriptionRemove(subscription.subscription().id))
   }
   if (event === subscription.events.renewSuccess) {
