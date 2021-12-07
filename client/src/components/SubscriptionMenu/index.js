@@ -5,11 +5,11 @@ import './style.scss'
 import { ROUTES } from '../../constants'
 
 const options = [
-  {text: 'Get Subscriptions', link: ROUTES.GET_SUBSCRIPTIONS},
-  {text: 'Get Subscription', link: ROUTES.GET_SUBSCRIPTION},
   {text: 'Create Subscription', link: ROUTES.CREATE_SUBSCRIPTION},
+  {text: 'Get Subscriptions', link: ROUTES.GET_SUBSCRIPTIONS},
   {text: 'Update Subscription', link: ROUTES.UPDATE_SUBSCRIPTION},
-  {text: 'Cancel Subscription', link: ROUTES.CANCEL_SUBSCRIPTION}
+  {text: 'Cancel Subscription', link: ROUTES.CANCEL_SUBSCRIPTION},
+  {text: 'Get Subscription', link: ROUTES.GET_SUBSCRIPTION},
 ]
 
 const SubscriptionMenu = (props) => {

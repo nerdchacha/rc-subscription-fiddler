@@ -6,6 +6,7 @@ import { RcLoading } from '@ringcentral/juno'
  
 import Header from './components/Header'
 import Login from './pages/Login'
+import SimpleLogin from './pages/Login/Simple'
 import Subscriptions from './pages/Subscriptions'
 import { loginUsingAccessToken, reregisterSubscriptionEvents } from './actions'
 import { ROUTES } from './constants'
@@ -23,6 +24,7 @@ const Fiddler = (props) => {
         <Switch>
           <Container maxWidth="xl" space={2} className="container">
             <Route exact path={ROUTES.LOGIN} component={Login} />
+            <Route exact path={ROUTES.SIMPLE_LOGIN} component={SimpleLogin} />
             <Route path="/" component={Subscriptions} />
             <Redirect to={ROUTES.GET_SUBSCRIPTIONS} />
           </Container>

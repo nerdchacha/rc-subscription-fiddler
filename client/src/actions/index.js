@@ -193,14 +193,13 @@ const platformEventListener = (dispatch) => ({source, event, data, type}) => {
   dispatch(appendToConsole({text: JSON.stringify(data, null, 2), canCopy: true, name: 'platform'}))
 }
 
-const subscriptionEventListener = (dispatch) => ({source: subscription, event, data, type}) => {
+const subscriptionEventListener = (dispatch) => ({source: subscription, event, data, type, subscriptionId}) => {
   dispatch(appendToConsole({text: `Received ${subscription.constructor.name} event ${event}`, type, name: 'createSubscription'}))
   dispatch(appendToConsole({text: 'Event Data', name: 'createSubscription'}))
   dispatch(appendToConsole({text: JSON.stringify(data, null, 2), canCopy: true, name: 'createSubscription'}))
   if (event === subscription.events.renewError) {
-    // // Update redux store
-    console.log('renew error', subscription.subscription())
-    dispatch(subscriptionRemove(subscription.subscription().id))
+    // Remove subscription from store
+    dispatch(subscriptionRemove(subscriptionId))
   }
   if (event === subscription.events.renewSuccess) {
     // Update redux store

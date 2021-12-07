@@ -50,17 +50,18 @@ export const logout = () => platform.logout()
 
 export const subscribe = async ({eventFilters}) => {
   const subscription = subscriptions.createSubscription();
-  registerSubscriptionEvents(subscription)
   await subscription.setEventFilters(eventFilters).register();
+  registerSubscriptionEvents(subscription)
   return subscription
 }
 
 export const registerSubscriptionEvents = (subscription) => {
-  subscription.on(subscription.events.notification, (data) => _subscriptionEventListener({source: subscription, event: subscription.events.notification, data, type: 'success'}))
-  subscription.on(subscription.events.removeSuccess, (data) => _subscriptionEventListener({source: subscription, event: subscription.events.removeSuccess, data, type: 'success'}))
-  subscription.on(subscription.events.removeError, (data) => _subscriptionEventListener({source: subscription, event: subscription.events.removeError, data, type: 'error'}))
-  subscription.on(subscription.events.renewSuccess, (data) => _subscriptionEventListener({source: subscription, event: subscription.events.renewSuccess, data, type: 'success'}))
-  subscription.on(subscription.events.renewError, (data) => _subscriptionEventListener({source: subscription, event: subscription.events.renewError, data, type: 'error'}))
-  subscription.on(subscription.events.subscribeSuccess, (data) => _subscriptionEventListener({source: subscription, event: subscription.events.subscribeSuccess, data, type: 'success'}))
-  subscription.on(subscription.events.subscribeError, (data) => _subscriptionEventListener({source: subscription, event: subscription.events.subscribeError, data, type: 'error'}))
+  const options = {source: subscription, subscriptionId: subscription.subscription().id}
+  subscription.on(subscription.events.notification, (data) => _subscriptionEventListener(Object.assign({}, options, {event: subscription.events.notification, data, type: 'success'})))
+  subscription.on(subscription.events.removeSuccess, (data) => _subscriptionEventListener(Object.assign({}, options, {event: subscription.events.removeSuccess, data, type: 'success'})))
+  subscription.on(subscription.events.removeError, (data) => _subscriptionEventListener(Object.assign({}, options, {event: subscription.events.removeError, data, type: 'error'})))
+  subscription.on(subscription.events.renewSuccess, (data) => _subscriptionEventListener(Object.assign({}, options, {event: subscription.events.renewSuccess, data, type: 'success'})))
+  subscription.on(subscription.events.renewError, (data) => _subscriptionEventListener(Object.assign({}, options, {event: subscription.events.renewError, data, type: 'error'})))
+  subscription.on(subscription.events.subscribeSuccess, (data) => _subscriptionEventListener(Object.assign({}, options, {event: subscription.events.subscribeSuccess, data, type: 'success'})))
+  subscription.on(subscription.events.subscribeError, (data) => _subscriptionEventListener(Object.assign({}, options, {event: subscription.events.subscribeError, data, type: 'error'})))
 }

@@ -6,14 +6,10 @@ import { setLoginDetails, login } from '../../actions'
 
 import './style.scss'
 
-const Login = (props) => {
+const SimpleLogin = (props) => {
   const alertComponent = (
     <RcAlert className="login-type-alert" severity="warning">
-    <p>In order to use this demo your application must have:</p>
-      <ol>
-        <li>Appropriate <strong>GRANT_TYPE</strong> permissions</li>
-        <li><strong>REDIRECT_URI</strong> that strictly matches this one <strong>{`${window.location.origin}/redirect.html`}</strong></li>
-      </ol>
+      <p>We recommend using the 3 legged auth flow instead of password based login</p>
     </RcAlert>
   )
 
@@ -21,14 +17,36 @@ const Login = (props) => {
     id: 'loginTypeAlert',
     type: 'passThrough',
     component: alertComponent,
-    dependsOn: {
-      fields: [
-        { name: 'loginType', parser: { type: 'string' } }
-      ],
-      operator: {
-        '===': ['3LeggedLogin', { var: 'loginType' }]
+  }, {
+    id: 'username',
+    label: 'User Name*',
+    placeholder: 'Enter Username',
+    type: 'text',
+    yupType: 'string',
+    validations: [
+      {
+        type: 'required',
+        params: ['Username required'],
       }
-    },
+    ],
+  }, {
+    id: 'password',
+    label: 'Password*',
+    placeholder: 'Enter Password',
+    type: 'password',
+    yupType: 'string',
+    validations: [
+      {
+        type: 'required',
+        params: ['Password required'],
+      }
+    ],
+  }, {
+    id: 'extension',
+    label: 'Extension',
+    placeholder: 'Enter Extension',
+    type: 'text',
+    yupType: 'string',
   }, {
     id: 'serverUrl',
     label: 'Environment*',
@@ -79,7 +97,7 @@ const Login = (props) => {
   }]
 
   const handleSubmit = ({ serverUrl, appKey, appSecret, username, password, extension }) => {
-    props.setLoginDetails({ serverUrl, appKey, appSecret, loginType: '3LeggedLogin', username, password, extension })
+    props.setLoginDetails({ serverUrl, appKey, appSecret, loginType: 'password', username, password, extension })
     props.login()
   }
 
@@ -109,4 +127,4 @@ const mapDispatchToProps = (dispatch) => ({
   login: () => (dispatch(login()))
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(Login)
+export default connect(mapStateToProps, mapDispatchToProps)(SimpleLogin)

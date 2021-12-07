@@ -43,7 +43,7 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  clearConsole: () => dispatch(clearConsole('cancelSubscriptions')),
+  clearConsole: () => dispatch(clearConsole('cancelSubscription')),
   cancelSubscription: (subscriptionId) => dispatch(cancelSubscription(subscriptionId))
 })
 
