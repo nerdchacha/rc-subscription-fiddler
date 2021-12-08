@@ -20,7 +20,7 @@ const Subscriptions = () => {
           <Route exact path={ROUTES.CREATE_SUBSCRIPTION} component={CreateSubscription} />
           <Route exact path={ROUTES.GET_SUBSCRIPTIONS} component={GetSubscriptions} />
           <Route exact path={ROUTES.GET_SUBSCRIPTION} component={GetSubscription} />
-          <Route exact path={ROUTES.UPDATE_SUBSCRIPTION} component={UpdateSubscription} />
+          <Route path={`${ROUTES.UPDATE_SUBSCRIPTION}/:id?`} component={UpdateSubscription} />
           <Route exact path={ROUTES.CANCEL_SUBSCRIPTION} component={CancelSubscription} />
         </Switch>
       </Grid>

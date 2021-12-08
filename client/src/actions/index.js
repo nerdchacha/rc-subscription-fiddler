@@ -50,7 +50,7 @@ export const login = () => async (dispatch, getState) => {
 }
 
 export const loginUsingAccessToken = () => async (dispatch, getState) => {
-  const { auth: { loginDetails, isLoggedIn, token } } = getState()
+  const { auth: { loginDetails, isLoggedIn, token }, router: { location } } = getState()
   if (!isLoggedIn) { return }
   const { serverUrl, appKey, appSecret } = loginDetails
   ringcentral.setup({serverUrl, appKey, appSecret, platformEventListener: platformEventListener(dispatch), subscriptionEventListener: subscriptionEventListener(dispatch)})
@@ -59,7 +59,7 @@ export const loginUsingAccessToken = () => async (dispatch, getState) => {
   try {
     ringcentral.setToken(token)
     dispatch(setLoggedIn(true))
-    dispatch(push(ROUTES.CREATE_SUBSCRIPTION))
+    dispatch(push(location.pathname))
   } catch (e) {
     // TODO: Show this somewhere
     console.log(e.message)

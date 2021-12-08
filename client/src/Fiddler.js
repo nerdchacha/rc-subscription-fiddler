@@ -21,14 +21,14 @@ const Fiddler = (props) => {
     <div className="rc-notification-app">
       <Header />
       <RcLoading loading={props.isLoading} keepMounted>
-        <Switch>
-          <Container maxWidth="xl" space={2} className="container">
+        <Container maxWidth="xl" space={2} className="container">
+          <Switch>
             <Route exact path={ROUTES.LOGIN} component={Login} />
             <Route exact path={ROUTES.SIMPLE_LOGIN} component={SimpleLogin} />
             <Route path="/" component={Subscriptions} />
             <Redirect to={ROUTES.GET_SUBSCRIPTIONS} />
-          </Container>
-        </Switch>
+          </Switch>
+        </Container>
       </RcLoading>
     </div>
   )

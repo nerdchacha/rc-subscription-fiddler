@@ -1,5 +1,6 @@
 import { connect } from 'react-redux'
 import { Grid } from '@mui/material'
+import { useParams } from 'react-router-dom'
 
 import Form from '../../components/Form';
 import Terminal from '../../components/Terminal'
@@ -39,10 +40,17 @@ const data = [{
 const UpdateSubscriptions = ({consoleData, clearConsole, updateSubscription}) => {
   // TODO: Make a privte route component and use it in there
   useIsLoggedIn()
+  const { id } = useParams();
+  const formData = data.map((item) => {
+    if (item.id === 'subscriptionId') {
+      return Object.assign({}, item, {initialValue: id})
+    }
+    return item
+  })
   return (
     <Grid container>
       <Grid item md={4} sm={12} className="grid-item">
-        <Form data={data} submitButtonText='Update Subscribe' handleSubmit={updateSubscription} />
+        <Form data={formData} submitButtonText='Update Subscribe' handleSubmit={updateSubscription} />
       </Grid>
       <Grid item md={8} sm={12} className="grid-item">
         <Terminal data={consoleData} clearConsole={clearConsole} />
