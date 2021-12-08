@@ -13,17 +13,17 @@ const Header = ({isLoggedIn, logout, push}) => {
   const { pathname } = useLocation();
   const renderLogoutButton = isLoggedIn ? (
     <Button color="inherit" onClick={logout}>
-      <RcTypography variant="body2">Logout</RcTypography>
+      <RcTypography variant="caption2">Logout</RcTypography>
     </Button>
   ) : ''
   const renderSimpleLoginButton = !isLoggedIn && pathname === ROUTES.LOGIN ? (
     <Button color="inherit" onClick={() => push(ROUTES.SIMPLE_LOGIN)}>
-      <RcTypography variant="body2">Simple Login</RcTypography>
+      <RcTypography variant="caption2">Simple Login</RcTypography>
     </Button>
   ) : ''
   const render3LeggedLoginButton = !isLoggedIn && pathname === ROUTES.SIMPLE_LOGIN ? (
     <Button color="inherit" onClick={() => push(ROUTES.LOGIN)}>
-      <RcTypography variant="body2">3 Legged Login</RcTypography>
+      <RcTypography variant="caption2">3 Legged Login</RcTypography>
     </Button>
   ) : ''
   return (

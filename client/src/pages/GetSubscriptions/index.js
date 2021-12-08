@@ -14,16 +14,6 @@ const GetSubscriptions = ({consoleData, getSubscriptions, clearConsole, allSubsc
 
   const renderAllSubscriptions = Object.keys(allSubscriptions).map((id) => {
     const createdUsingApp = generatedSubscriptions.hasOwnProperty(id) 
-    const renderInfoIcon = generatedSubscriptions.hasOwnProperty(id) ? (
-      <RcIconButton
-        aria-label="info"
-        size="medium"
-        color={'action.grayDark'}
-        title="This subscription was created using this app"
-        TooltipProps={{placement: 'bottom'}}
-        symbol={Info}
-      />
-    ) : ''
     return (
       <RcListItem disableGutters divider canHover={false} key={id}>
         <RcListItemText primaryTypographyProps={{variant: 'body1'}} primary={id} />
