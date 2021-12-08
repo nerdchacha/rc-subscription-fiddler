@@ -1,22 +1,30 @@
-import { SUBSCRIPTION_SAVE, SUBSCRIPTION_REMOVE, SUBSCRIPTION_CLEAR } from '../actions'
+import { SUBSCRIPTION_SAVE, SUBSCRIPTION_REMOVE, SUBSCRIPTION_CLEAR, SUBSCRIPTION_SET_METADATA } from '../actions'
 
-const initialState = { generated: {}, all: {} }
+const initialState = { application: {}, all: {}, individual: {}, metadata: {} }
 
 const subscription = (state = initialState, action) => {
-  const { name } = action
+  const { source } = action
   switch (action.type) {
     case SUBSCRIPTION_SAVE: {
-      const { method } = action
-      const next = method === 'batch' ? {...state[name], ...action.data} : {...state[name], [action.data.id]: action.data}
-      return {...state, [name]: next}
+      const { process } = action
+      const next = process === 'batch' ? {...state[source], ...action.data} : {...state[source], [action.data.id]: action.data}
+      return {...state, [source]: next}
+    }
+    case SUBSCRIPTION_SET_METADATA: {
+      const nextMetadata = {...state.metadata}
+      nextMetadata[action.id] = Object.assign({}, nextMetadata[action.id], action.metadata)
+      return {...state, metadata: nextMetadata}
     }
     case SUBSCRIPTION_REMOVE: {
-      const next = {...state[name]}
+      let next = {...state[source]}
+      const nextMetadata = {...state.metadata}
       delete next[action.id]
-      return {...state, [name]: next}
+      delete nextMetadata[action.id]
+      if (source === 'individual') { next = {} }
+      return {...state, [source]: next, metadata: nextMetadata}
     }
     case SUBSCRIPTION_CLEAR: {
-      return {...state, ...{[name]: {}}}
+      return {...state, ...{[source]: {}}}
     }
     default:
       return state

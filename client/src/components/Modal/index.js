@@ -1,5 +1,4 @@
 import { RcDialog, RcDialogTitle, RcDialogActions, RcButton, RcDialogContent } from '@ringcentral/juno'
-import { Container } from '@mui/material'
 
 const Modal = ({
   open = false,
