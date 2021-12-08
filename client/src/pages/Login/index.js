@@ -21,14 +21,6 @@ const Login = (props) => {
     id: 'loginTypeAlert',
     type: 'passThrough',
     component: alertComponent,
-    dependsOn: {
-      fields: [
-        { name: 'loginType', parser: { type: 'string' } }
-      ],
-      operator: {
-        '===': ['3LeggedLogin', { var: 'loginType' }]
-      }
-    },
   }, {
     id: 'serverUrl',
     label: 'Environment*',
