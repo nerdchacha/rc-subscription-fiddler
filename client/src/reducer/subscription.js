@@ -1,19 +1,22 @@
 import { SUBSCRIPTION_SAVE, SUBSCRIPTION_REMOVE, SUBSCRIPTION_CLEAR } from '../actions'
 
-const initialState = {} 
+const initialState = { generated: {}, all: {} }
 
 const subscription = (state = initialState, action) => {
+  const { name } = action
   switch (action.type) {
     case SUBSCRIPTION_SAVE: {
-      return {...state, [action.data.id]: action.data}
+      const { method } = action
+      const next = method === 'batch' ? {...state[name], ...action.data} : {...state[name], [action.data.id]: action.data}
+      return {...state, [name]: next}
     }
     case SUBSCRIPTION_REMOVE: {
-      const newState = {...state}
-      delete newState[action.id]
-      return newState
+      const next = {...state[name]}
+      delete next[action.id]
+      return {...state, [name]: next}
     }
     case SUBSCRIPTION_CLEAR: {
-      return initialState
+      return {...state, ...{[name]: {}}}
     }
     default:
       return state

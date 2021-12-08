@@ -25,9 +25,9 @@ export const globalSetIsLoading = (isLoading) => ({type: GLOBAL_SET_IS_LOADING, 
 export const setLoginDetails = (details) => ({type: AUTH_SET_LOGIN_DETAILS, details})
 export const setAccessToken = (token) => ({type: AUTH_SET_ACCESS_TOKEN, token})
 export const globalSetRequestResponseData = (data) => ({type: GLOBAL_REQUEST_RESPONSE_SET_DATA, data})
-export const subscriptionSave = (data) => ({type: SUBSCRIPTION_SAVE, data})
-export const subscriptionRemove = (id) => ({type: SUBSCRIPTION_REMOVE, id})
-export const subscriptionClear = () => ({type: SUBSCRIPTION_CLEAR})
+export const subscriptionSave = ({data, name, method = 'individual'}) => ({type: SUBSCRIPTION_SAVE, data, name, method})
+export const subscriptionRemove = ({id, name}) => ({type: SUBSCRIPTION_REMOVE, id, name})
+export const subscriptionClear = (name) => ({type: SUBSCRIPTION_CLEAR, name})
 
 export const login = () => async (dispatch, getState) => {
   const { auth: { loginDetails } } = getState()
@@ -73,11 +73,11 @@ export const loginUsingAccessToken = () => async (dispatch, getState) => {
 export const logout = () => async (dispatch, getState) => {
   dispatch(globalSetIsLoading(true))
   // Remove all subscriptions on logout
-  const { subscription: allSubscriptions } = getState()
+  const { subscription: { generated: generatedSubscriptions } } = getState()
   try {
-    const removeAllSubscriptionsRequest = Object.keys(allSubscriptions).map((key) => {
+    const removeAllSubscriptionsRequest = Object.keys(generatedSubscriptions).map((key) => {
       const subscription = ringcentral.subscriptions.createSubscription()
-        subscription.setSubscription(allSubscriptions[key])
+        subscription.setSubscription(generatedSubscriptions[key])
         return subscription.remove()
     })
     await Promise.all(removeAllSubscriptionsRequest)
@@ -85,8 +85,14 @@ export const logout = () => async (dispatch, getState) => {
     console.log('Unabel to clean all subscriptions')
     console.log(e.message)
   }
-  dispatch(subscriptionClear())
-  await ringcentral.logout()
+  dispatch(subscriptionClear('generated'))
+  dispatch(subscriptionClear('all'))
+  try {
+    await ringcentral.logout()
+  } catch (e) {
+    console.log('Unabel to logout')
+    console.log(e.message)
+  }
   dispatch(globalSetIsLoading(false))
   dispatch(setLoggedIn(false))
   dispatch(setAccessToken({}))
@@ -98,7 +104,7 @@ export const createSubscription = ({eventFilters}) => async (dispatch) => {
   try {
     const subscription = await ringcentral.subscribe({eventFilters})
     const subscriptionData = subscription.subscription()
-    dispatch(subscriptionSave(subscriptionData))
+    dispatch(subscriptionSave({data: subscriptionData, name: 'generated'}))
     dispatch(appendToConsole({text: 'Subscription successful', type: 'success', name: 'createSubscription'}))
     dispatch(appendToConsole({text: 'Subscription details', type: 'info', name: 'createSubscription'}))
     dispatch(appendToConsole({text: JSON.stringify(subscriptionData, null, 2), canCopy: true, name: 'createSubscription'}))
@@ -117,6 +123,12 @@ export const getSubscriptions = () => async (dispatch) => {
     const json = await response.json()
     dispatch(appendToConsole({text: 'Successfully fetched all subscriptions', type: 'success', name: 'getSubscriptions'}))
     dispatch(appendToConsole({text: JSON.stringify(json, null, 2), canCopy: true, name: 'getSubscriptions'}))
+    dispatch(subscriptionClear('all'))
+    const allsubscriptions = json.records.reduce((seed, subscription) => {
+      seed[subscription.id] = subscription
+      return seed
+    }, {})
+    dispatch(subscriptionSave({data: allsubscriptions, name: 'all', method: 'batch'}))
   } catch (e) {
     dispatch(appendToConsole({text: 'Error fetching subscriptions', type: 'error', name: 'getSubscriptions'}))
     dispatch(appendToConsole({text: e.message, canCopy: true, name: 'getSubscriptions'}))
@@ -138,8 +150,8 @@ export const getSubscription = (subscriptionId) => async (dispatch) => {
 }
 
 export const updateSubscription = ({subscriptionId, eventFilters}) => async (dispatch, getState) => {
-  const { subscription: allSUbscriptions } = getState()
-  let subscriptionData = allSUbscriptions[subscriptionId]
+  const { subscription: { generated: generatedSubscriptions } } = getState()
+  let subscriptionData = generatedSubscriptions[subscriptionId]
   if (!subscriptionData) {
     const response = await ringcentral.platform.get(`/restapi/v1.0/subscription/${subscriptionId}`)
     subscriptionData = await response.json()
@@ -149,15 +161,15 @@ export const updateSubscription = ({subscriptionId, eventFilters}) => async (dis
   dispatch(appendToConsole({text: 'Updaing subscription...', name: 'updateSubscription', type: 'info'}))
   await subscription.setEventFilters(eventFilters).register();
   const updatedSubscriptionData = Object.assign(subscriptionData, {eventFilters})
-  dispatch(subscriptionSave(updatedSubscriptionData))
+  dispatch(subscriptionSave({data: updatedSubscriptionData, name: 'generated'}))
   dispatch(appendToConsole({text: 'Successfully updated subscription', name: 'updateSubscription', type: 'success'}))
   dispatch(appendToConsole({text: 'Subscription details', type: 'info', name: 'updateSubscription'}))
   dispatch(appendToConsole({text: JSON.stringify(updatedSubscriptionData, null, 2), canCopy: true, name: 'updateSubscription'}))
 }
 
 export const cancelSubscription = (subscriptionId) => async (dispatch, getState) => {
-  const { subscription: allSUbscriptions } = getState()
-  let subscriptionData = allSUbscriptions[subscriptionId]
+  const { subscription: { generated: generatedSubscriptions } } = getState()
+  let subscriptionData = generatedSubscriptions[subscriptionId]
   if (!subscriptionData) {
     const response = await ringcentral.platform.get(`/restapi/v1.0/subscription/${subscriptionId}`)
     subscriptionData = await response.json()
@@ -169,16 +181,21 @@ export const cancelSubscription = (subscriptionId) => async (dispatch, getState)
   dispatch(appendToConsole({text: 'Subscription successfully cancelled', name: 'cancelSubscription', type: 'success'}))
   if (subscriptionId) {
     // TODO: Subscription was not created using the app
-    dispatch(subscriptionRemove(subscriptionId))
+    dispatch(subscriptionRemove({id: subscriptionId, name: 'generated'}))
   }
 }
 
+export const cancelSubscriptionAndGetAllSubscriptions = (subscriptionId) => async (dispatch) => {
+  await dispatch(cancelSubscription(subscriptionId))
+  await dispatch(getSubscriptions())
+}
+
 export const reregisterSubscriptionEvents = () => async (dispatch, getState) => {
-  const { subscription: allSUbscriptions } = getState()
+  const { subscription: { generated: generatedSubscriptions } } = getState()
   try {
-    Object.keys(allSUbscriptions).forEach((key) => {
+    Object.keys(generatedSubscriptions).forEach((key) => {
       const subscription = ringcentral.subscriptions.createSubscription()
-      subscription.setSubscription(allSUbscriptions[key])
+      subscription.setSubscription(generatedSubscriptions[key])
       ringcentral.registerSubscriptionEvents(subscription)
     })
   } catch (e) {
@@ -199,10 +216,10 @@ const subscriptionEventListener = (dispatch) => ({source: subscription, event, d
   dispatch(appendToConsole({text: JSON.stringify(data, null, 2), canCopy: true, name: 'createSubscription'}))
   if (event === subscription.events.renewError) {
     // Remove subscription from store
-    dispatch(subscriptionRemove(subscriptionId))
+    dispatch(subscriptionRemove({id: subscriptionId, name: 'generated'}))
   }
   if (event === subscription.events.renewSuccess) {
     // Update redux store
-    dispatch(subscriptionSave(subscription.subscription()))
+    dispatch(subscriptionSave({data: subscription.subscription(), name: 'generated'}))
   }
 }
