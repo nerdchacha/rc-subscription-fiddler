@@ -8,6 +8,7 @@ import authReducer from './auth'
 import globalReducer from './global'
 import subscriptionReducer from './subscription'
 import metadataReducer from './metadata'
+import notificationReducer from './notification'
 
 const subscriptionPersistConfig = {
   key: 'rc-subscription-fiddler-subscription',
@@ -21,6 +22,7 @@ const createRootReducer = (history) => combineReducers({
   subscription: persistReducer(subscriptionPersistConfig, subscriptionReducer),
   global: globalReducer,
   metadata: metadataReducer,
+  notification: notificationReducer,
   router: connectRouter(history),
 })
 

@@ -26,10 +26,7 @@
     "url": "https://github.com/nerdchacha/rc-subscription-fiddler/issues"
   },
   "homepage": "https://github.com/nerdchacha/rc-subscription-fiddler#readme",
-  "dependencies": {
-    "concurrently": "^6.4.0"
-  },
   "devDependencies": {
-    "prettier": "2.5.0"
+    "concurrently": "^6.4.0"
   }
 }

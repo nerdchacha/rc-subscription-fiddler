@@ -8,16 +8,17 @@ import Header from './components/Header'
 import Login from './pages/Login'
 import SimpleLogin from './pages/Login/Simple'
 import Subscriptions from './pages/Subscriptions'
-import { loginUsingAccessToken, reregisterSubscriptionEvents } from './actions'
+import { loginUsingAccessToken } from './actions'
 import { ROUTES } from './constants'
+import useNotification from './hooks/useNotification'
+
 
 import Console from './components/Console'
 
 const Fiddler = (props) => {
-  useEffect(() => {
-    props.loginUsingAccessToken()
-    props.reregisterSubscriptionEvents()
-  }, [])
+  useEffect(() => props.loginUsingAccessToken(), [])
+
+  useNotification()
 
   return (
     <div className="rc-notification-app">
@@ -43,7 +44,6 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   loginUsingAccessToken: () => dispatch(loginUsingAccessToken()),
-  reregisterSubscriptionEvents: () => dispatch(reregisterSubscriptionEvents()),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Fiddler)

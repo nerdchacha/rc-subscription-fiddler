@@ -19,6 +19,9 @@ export const SET_CONSOLE_HEIGHT = 'SET_CONSOLE_HEIGHT'
 export const SET_CONSOLE_ACTIVE_TAB = 'SET_CONSOLE_ACTIVE_TAB'
 export const DELETE_CONSOLE = 'DELETE_CONSOLE'
 export const SET_METADATA = 'SET_METADATA'
+export const ENQUEUE_SNACKBAR = 'ENQUEUE_SNACKBAR';
+export const CLOSE_SNACKBAR = 'CLOSE_SNACKBAR';
+export const REMOVE_SNACKBAR = 'REMOVE_SNACKBAR';
 
 export const appendToConsole = ({text, canCopy, type = 'text', name, collapsible = false, isCode = false }) => ({type: CONOSLE_APPEND, data: {text, canCopy, type, collapsible, isCode}, name})
 export const clearConsole = (name) => ({type: CONSOLE_CLEAR, name})
@@ -47,6 +50,7 @@ export const login = () => async (dispatch, getState) => {
     dispatch(globalSetIsLoading(false))
     dispatch(push(ROUTES.CREATE_SUBSCRIPTION))
   } catch (e) {
+    dispatch(notifier.error(`Error while logging in. ${e.message}`))
     dispatch(appendToConsole({text: 'Error while logging in', type: 'error', name: 'general'}))
     dispatch(appendToConsole({text: e.message, type: 'error', name: 'general'}))
     dispatch(setLoggedIn(false))
@@ -61,12 +65,13 @@ export const loginUsingAccessToken = () => async (dispatch, getState) => {
   const { serverUrl, appKey, appSecret } = loginDetails
   ringcentral.setup({serverUrl, appKey, appSecret, platformEventListener: platformEventListener(dispatch), subscriptionEventListener: subscriptionEventListener(dispatch)})
   dispatch(globalSetIsLoading(true))
-  // TODO: reset subscription using stored data
+  dispatch(reregisterSubscriptionEvents())
   try {
     ringcentral.setToken(token)
     dispatch(setLoggedIn(true))
     dispatch(push(location.pathname))
   } catch (e) {
+    dispatch(notifier.error(`Error while logging in. ${e.message}`))
     dispatch(appendToConsole({text: 'Error while logging in', type: 'error', name: 'general'}))
     dispatch(appendToConsole({text: e.message, type: 'error', name: 'general'}))
     dispatch(setLoggedIn(false))
@@ -111,6 +116,7 @@ export const createSubscription = ({eventFilters}) => async (dispatch) => {
     const subscription = await ringcentral.subscribe({eventFilters})
     const subscriptionData = subscription.subscription()
     dispatch(subscriptionSave({data: subscriptionData, source: 'application'}))
+    dispatch(notifier.success('Subscription creates successfully'))
     dispatch(appendToConsole({text: `Subscription with id ${subscriptionData.id} successfully created`, type: 'success', name: 'general'}))
     dispatch(setConsoleActiveTab(subscriptionData.id))
     dispatch(setConsoleHeight(CONSOLE_HEIGHT))
@@ -118,7 +124,8 @@ export const createSubscription = ({eventFilters}) => async (dispatch) => {
     dispatch(appendToConsole({text: JSON.stringify(subscriptionData, null, 2), canCopy: true, name: subscriptionData.id, collapsible: true, isCode: true}))
     dispatch(appendToConsole({text: 'Listening for notifications', type: 'info', name: subscriptionData.id}))
   } catch (e)  {
-    dispatch(appendToConsole({text: 'Unable to register subscription', type: 'error', name: 'general'}))
+    dispatch(notifier.error(`Unable to create subscription. ${e.message}`))
+    dispatch(appendToConsole({text: 'Unable to create subscription', type: 'error', name: 'general'}))
     dispatch(appendToConsole({text: e.message, type: 'error', name: 'general'}))
   }
   dispatch(setMetadata('create', {isLoading: false}))
@@ -139,6 +146,7 @@ export const getSubscriptions = () => async (dispatch) => {
     }, {})
     dispatch(subscriptionSave({data: allsubscriptions, source: 'all', process: 'batch'}))
   } catch (e) {
+    dispatch(notifier.error(`Unable to get all subscriptions. ${e.message}`))
     dispatch(appendToConsole({text: 'Error while fetching all subscriptions', type: 'error', name: 'general'}))
     dispatch(appendToConsole({text: e.message, type: 'error', name: 'general'}))
   }
@@ -155,6 +163,7 @@ export const getSubscription = (subscriptionId) => async (dispatch) => {
     dispatch(appendToConsole({text: 'Succesfully fetched subscription', type: 'success', name: 'general'}))
     dispatch(subscriptionSave({data: json, source: 'individual', process: 'batch'}))
   } catch (e) {
+    dispatch(notifier.error(`Unable to get subscription. ${e.message}`))
     dispatch(appendToConsole({text: 'Error while fetching subscription', type: 'error', name: 'general'}))
     dispatch(appendToConsole({text: e.message, type: 'error', name: 'general'}))
   }
@@ -174,6 +183,7 @@ export const updateSubscription = ({subscriptionId, eventFilters}) => async (dis
       subscriptionData = await response.json()
     }
   } catch (e) {
+    dispatch(notifier.error(`Unable to fetch subscription details. ${e.message}`))
     dispatch(appendToConsole({text: `Unable to fetch subscriptind details for id ${subscriptionId} to update it`, type: 'error', name: 'general'}))
     dispatch(setMetadata('update', {isLoading: false}))
     return
@@ -188,11 +198,13 @@ export const updateSubscription = ({subscriptionId, eventFilters}) => async (dis
     dispatch(setConsoleActiveTab(subscriptionData.id))
     dispatch(setConsoleHeight(CONSOLE_HEIGHT))
     dispatch(subscriptionSave({data: updatedSubscriptionData, source: 'application'}))
+    dispatch(notifier.success('Subscription updates successfully'))
     dispatch(appendToConsole({text: `Successfully updated subscription with id ${subscriptionId}`, name: 'general', type: 'success'}))
     dispatch(appendToConsole({text: 'Subscription details', name: subscriptionId}))
     dispatch(appendToConsole({text: JSON.stringify(updatedSubscriptionData, null, 2), canCopy: true, name: subscriptionId, isCode: true, collapsible: true}))
     dispatch(appendToConsole({text: 'Listening for notifications', type: 'info', name: subscriptionData.id}))
    } catch (e) {
+    dispatch(notifier.error(`Unable to update subscription. ${e.message}`))
     dispatch(appendToConsole({text: `Unable to update subscription with id ${subscriptionId}`, type: 'error', name: 'general'}))
     dispatch(appendToConsole({text: e.message, type: 'error', name: 'general'}))
    }
@@ -211,6 +223,7 @@ export const cancelSubscription = (subscriptionId) => async (dispatch, getState)
       subscriptionData = await response.json()
       dispatch(appendToConsole({text: `Successfully fetched subscription details for id ${subscriptionId}`, type: 'success', name: 'general'}))
     } catch (e) {
+      dispatch(notifier.error(`Unable to fetch subscription details. ${e.message}`))
       dispatch(appendToConsole({text: `Unable to fetch subscriptind details for id ${subscriptionId} to remove it`, type: 'error', name: 'general'}))
       dispatch(setMetadata('cancel', {isLoading: false}))
       return
@@ -221,8 +234,10 @@ export const cancelSubscription = (subscriptionId) => async (dispatch, getState)
   subscription.setSubscription(subscriptionData)
   try {
     await subscription.remove()
+    dispatch(notifier.success('Subscription removed successfully'))
     dispatch(appendToConsole({text: `Successfully removed subscription with id ${subscriptionId}`, name: 'general', type: 'success'}))
   } catch (e) {
+    dispatch(notifier.error(`Unable to cancel subscription. ${e.message}`))
     dispatch(appendToConsole({text: `Unable to cancel subscription with id ${subscriptionId}`, type: 'error', name: 'general'}))
     dispatch(appendToConsole({text: e.message, type: 'error', name: 'general'}))
   }
@@ -262,7 +277,22 @@ const subscriptionEventListener = (dispatch) => ({source: subscription, event, d
     dispatch(subscriptionRemove({id: subscriptionId}))
   }
   if (event === subscription.events.renewSuccess) {
-    // Update redux store
     dispatch(subscriptionSave({data: subscription.subscription(), source: 'application'}))
   }
+}
+
+export const enqueueSnackbar = (notification) => {
+  const key = notification.options && notification.options.key;
+  return { type: ENQUEUE_SNACKBAR, notification: {...notification, key: key || new Date().getTime() + Math.random()}}
+}
+
+export const closeSnackbar = key => ({type: CLOSE_SNACKBAR, dismissAll: !key, key})
+
+export const removeSnackbar = key => ({ type: REMOVE_SNACKBAR, key})
+
+const notifier = {
+  success: (message) => enqueueSnackbar({message, options: {variant: 'success'}}),
+  error: (message) => enqueueSnackbar({message, options: {variant: 'error'}}),
+  info: (message) => enqueueSnackbar({message, options: {variant: 'info'}}),
+  warn: (message) => enqueueSnackbar({message, options: {variant: 'warn'}}),
 }

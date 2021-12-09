@@ -3,7 +3,7 @@ import { RcThemeProvider } from '@ringcentral/juno'
 import { ConnectedRouter } from 'connected-react-router'
 import { PersistGate } from 'redux-persist/integration/react'
 
-import Fiddler from './Fiddler'
+import NotificationAppWrapper from './NotificationAppWrapper'
 import configureStore, { history } from './store'
 import { monkeyPathFetch } from './fetch'
 
@@ -18,7 +18,7 @@ function App() {
       <PersistGate loading={null} persistor={persistor}>
         <ConnectedRouter history={history}>
           <RcThemeProvider>
-            <Fiddler />
+              <NotificationAppWrapper />
           </RcThemeProvider>
         </ConnectedRouter>
       </PersistGate>
