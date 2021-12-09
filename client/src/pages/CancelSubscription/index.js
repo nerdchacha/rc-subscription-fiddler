@@ -2,9 +2,8 @@ import { connect } from 'react-redux'
 import { Grid } from '@mui/material'
 
 import Form from '../../components/Form'
-import Terminal from '../../components/Terminal'
 import useIsLoggedIn from '../../hooks/useIsLoggedIn'
-import { clearConsole, cancelSubscription } from '../../actions'
+import { cancelSubscription } from '../../actions'
 
 const data = [{
   id: 'subscriptionId',
@@ -19,31 +18,28 @@ const data = [{
   ]
 }]
 
-const CancelSubscription = ({consoleData, cancelSubscription, clearConsole}) => {
+const CancelSubscription = ({cancelSubscription, isLoading}) => {
   useIsLoggedIn()
 
   const handleSubmit = ({ subscriptionId }) => {
     cancelSubscription(subscriptionId)
   }
 
+  const submitButtonProps = {loading: isLoading}
   return (
     <Grid container>
-      <Grid item md={4} sm={12} className="grid-item">
-        <Form data={data} submitButtonText='Cancel Subscription' handleSubmit={handleSubmit} />
-      </Grid>
-      <Grid item md={8} sm={12} className="grid-item">
-        <Terminal data={consoleData} clearConsole={clearConsole} />
+      <Grid item md={12} className="grid-item">
+        <Form data={data} submitButtonProps={submitButtonProps} submitButtonText='Cancel Subscription' handleSubmit={handleSubmit} />
       </Grid>
     </Grid>
   )
 }
 
 const mapStateToProps = (state) => ({
-  consoleData: state.console.cancelSubscription.data
+  isLoading: state.metadata.cancel.isLoading
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  clearConsole: () => dispatch(clearConsole('cancelSubscription')),
   cancelSubscription: (subscriptionId) => dispatch(cancelSubscription(subscriptionId))
 })
 

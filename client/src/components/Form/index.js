@@ -44,7 +44,7 @@ const Form = (props) => {
     {},
   );
   const validationSchema = createValidationSchema(props) 
-  const renderSubmitButton = hideSubmitButton ? '' : <RcButton radius='zero' style={{marginTop: 20}} type="submit">{submitButtonText}</RcButton>
+  const renderSubmitButton = hideSubmitButton ? '' : <RcButton radius='zero' {...props.submitButtonProps} style={{marginTop: 20}} type="submit">{submitButtonText}</RcButton>
   return (
     <Formik
       initialValues={initialVaues}

@@ -1,23 +1,50 @@
-import { CONOSLE_APPEND, CONSOLE_CLEAR } from '../actions'
+import { CONOSLE_APPEND, CONSOLE_CLEAR, SET_CONSOLE_ACTIVE_TAB, SET_CONSOLE_HEIGHT, SUBSCRIPTION_REMOVE, SUBSCRIPTION_CLEAR } from '../actions'
 
 const initialState = {
-  createSubscription: { data: [] },
-  getSubscriptions: { data: [] },
-  getSubscription: { data: [] },
-  updateSubscription: { data: [] },
-  cancelSubscription: { data: [] },
-  platform: {data: []},
+  requestResponse: {data: []},
+  general: {data: []},
+  metadata: {height: 40, activeTab: 'general'}
 } 
+
+const whitelist = Object.keys(initialState)
 
 const consoleReducer = (state = initialState, action) => {
   switch (action.type) {
     case CONOSLE_APPEND: {
-      const nextData = [...state[action.name].data, action.data]
+      const details = state[action.name] ? state[action.name] : {}
+      const data = details.data ? [...details.data] : []
+      const nextData = [...data, action.data]
       return { ...state, [action.name]: { data: nextData } }
     }
     case CONSOLE_CLEAR: {
       const nextConfig = { [action.name]: { data: [] } }
       return { ...state, ...nextConfig }
+    }
+    case SET_CONSOLE_ACTIVE_TAB: {
+      const metadata = {...state.metadata, ...{activeTab: action.value}}
+      return { ...state, metadata }
+    }
+    case SET_CONSOLE_HEIGHT: {
+      const metadata = {...state.metadata, ...{height: action.value}}
+      return { ...state, metadata }
+    }
+    case SUBSCRIPTION_REMOVE: {
+      const nextState = {...state}
+      const metadata = {...state.metadata}
+      metadata.activeTab = metadata.activeTab === action.id ? 'general' : metadata.activeTab
+      delete nextState[action.id]
+      return {...nextState, ...{metadata}}
+    }
+    case SUBSCRIPTION_CLEAR: {
+      if (action.source !== 'application') { return state }
+      const nextState = {...state}
+      Object.keys(nextState).forEach((key) => {
+        if (whitelist.includes(key)) { return }
+        delete nextState[key]
+      })
+      const metadata = {...state.metadata}
+      metadata.activeTab = whitelist.includes(metadata.activeTab) ? metadata.activeTab : 'general'
+      return {...nextState, ...{metadata}}
     }
     default:
       return state

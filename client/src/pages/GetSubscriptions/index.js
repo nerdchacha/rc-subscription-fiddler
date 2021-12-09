@@ -10,7 +10,7 @@ import { ROUTES } from '../../constants'
 
 import './style.scss'
 
-const GetSubscriptions = ({getSubscriptions, allSubscriptions, generatedSubscriptions, cancelSubscription, subscriptionSetMetadata, push, subscriptionMetadata}) => {
+const GetSubscriptions = ({getSubscriptions, allSubscriptions, generatedSubscriptions, cancelSubscription, subscriptionSetMetadata, push, subscriptionMetadata, isLoading}) => {
   useIsLoggedIn()
 
   const handleCancel = (id) => (e) => {
@@ -76,7 +76,7 @@ const GetSubscriptions = ({getSubscriptions, allSubscriptions, generatedSubscrip
 
   const renderGeneratedSubscriptions = Object.keys(filteredGeneratedSubscriptions).length ? (
     <div>
-      <RcTypography variant="title1">Created using this app</RcTypography>
+      <RcTypography variant="title1">Created/Updated using this app</RcTypography>
       {renderSubscriptions(filteredGeneratedSubscriptions)}
     </div>
   ) : ''
@@ -91,14 +91,13 @@ const GetSubscriptions = ({getSubscriptions, allSubscriptions, generatedSubscrip
   const renderNoData = !Object.keys(filteredGeneratedSubscriptions).length && !Object.keys(filteredNonGeneratedSubscriptions).length ? (
     <div>
       <RcTypography variant="title1">No active subscriptions</RcTypography>
-      <RcTypography variant="subheading1">Click on the "Get Subscriptions" buttons to fetch subscriptions</RcTypography>
     </div>
   ) : ''
 
   return (
     <Grid container>
       <Grid item md={12} sm={12} className="grid-item">
-        <RcButton radius="zero" onClick={getSubscriptions}>Get subscriptions</RcButton>
+        <RcButton className="get-subscriptions-button" radius="zero" onClick={getSubscriptions} loading={isLoading}>Get subscriptions</RcButton>
         <RcList className="subscription-container">
             {renderGeneratedSubscriptions}
             {renderNonGeneratedSubscriptions}
@@ -112,7 +111,8 @@ const GetSubscriptions = ({getSubscriptions, allSubscriptions, generatedSubscrip
 const mapStateToProps = (state) => ({
   allSubscriptions: state.subscription.all,
   generatedSubscriptions: state.subscription.application,
-  subscriptionMetadata: state.subscription.metadata
+  subscriptionMetadata: state.subscription.metadata,
+  isLoading: state.metadata.all.isLoading
 })
 
 const mapDispatchToProps = (dispatch) => ({

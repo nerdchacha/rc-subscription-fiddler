@@ -7,3 +7,5 @@ export const ROUTES = Object.freeze({
   LOGIN: '/login',
   SIMPLE_LOGIN: '/simple-login'
 })
+
+export const CONSOLE_HEIGHT = 500

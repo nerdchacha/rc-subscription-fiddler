@@ -11,6 +11,8 @@ import Subscriptions from './pages/Subscriptions'
 import { loginUsingAccessToken, reregisterSubscriptionEvents } from './actions'
 import { ROUTES } from './constants'
 
+import Console from './components/Console'
+
 const Fiddler = (props) => {
   useEffect(() => {
     props.loginUsingAccessToken()
@@ -29,6 +31,7 @@ const Fiddler = (props) => {
             <Redirect to={ROUTES.GET_SUBSCRIPTIONS} />
           </Switch>
         </Container>
+        <Console />
       </RcLoading>
     </div>
   )

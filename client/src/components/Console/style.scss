@@ -1,0 +1,47 @@
+.rc-subscription-console {
+  background-color: rgb(21, 21, 21);
+  bottom: 0;
+  z-index: 10000;
+  .paper-container {
+    background-color: rgb(21, 21, 21);
+    display: flex;
+    justify-content: space-between;
+  }
+  .tab {
+    color: white;
+    &.RcTab-selected{
+      color: white;
+    }
+  }
+  .RcTabs-indicator {
+    background-color: white !important;
+  }
+  .tab-list-container {
+    width: 95%;
+  }
+  .tab-content {
+    color: rgb(200, 200, 200);
+    overflow: auto;
+    font-size: 15px;
+    .log-entry {
+      &:last-child {
+        padding-bottom: 20px;
+      }
+      margin: 5px 0;
+      p {
+        &.text {
+          color: rgb(200, 200, 200);
+        }
+        &.error {
+          color: tomato;
+        }
+        &.info {
+          color: gold
+        }
+        &.success {
+          color: lawngreen;
+        }
+      }
+    }
+  }
+}

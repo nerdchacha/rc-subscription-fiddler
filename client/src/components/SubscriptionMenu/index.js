@@ -14,11 +14,11 @@ const options = [
 
 const SubscriptionMenu = (props) => {
   const location = useLocation()
-  
+  const path = `/${location.pathname.split('/')[1]}`
   const renderOptions = options.map(({text, link}, i) => {
     return (
       <div className="item" key={i}>
-        <p className={location.pathname === link ? 'active' : ''}><Link to={link}>{text}</Link></p>
+        <p className={path === link ? 'active' : ''}><Link to={link}>{text}</Link></p>
       </div>
     )
   })

@@ -3,9 +3,8 @@ import { Grid } from '@mui/material'
 import { useParams } from 'react-router-dom'
 
 import Form from '../../components/Form';
-import Terminal from '../../components/Terminal'
 import useIsLoggedIn from '../../hooks/useIsLoggedIn'
-import { clearConsole, updateSubscription } from '../../actions'
+import { updateSubscription } from '../../actions'
 
 import './style.scss'
 
@@ -37,7 +36,7 @@ const data = [{
   }]
 }]
 
-const UpdateSubscriptions = ({consoleData, clearConsole, updateSubscription}) => {
+const UpdateSubscriptions = ({updateSubscription, isLoading}) => {
   // TODO: Make a privte route component and use it in there
   useIsLoggedIn()
   const { id } = useParams();
@@ -47,24 +46,21 @@ const UpdateSubscriptions = ({consoleData, clearConsole, updateSubscription}) =>
     }
     return item
   })
+  const submitButtonProps = {loading: isLoading}
   return (
     <Grid container>
-      <Grid item md={4} sm={12} className="grid-item">
-        <Form data={formData} submitButtonText='Update Subscribe' handleSubmit={updateSubscription} />
-      </Grid>
-      <Grid item md={8} sm={12} className="grid-item">
-        <Terminal data={consoleData} clearConsole={clearConsole} />
+      <Grid item md={12} className="grid-item">
+        <Form data={formData} submitButtonProps={submitButtonProps} submitButtonText='Update Subscribe' handleSubmit={updateSubscription} />
       </Grid>
     </Grid>
   )
 }
 
 const mapStateToProps = (state) => ({
-  consoleData: state.console.updateSubscription.data
+  isLoading: state.metadata.update.isLoading
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  clearConsole: () => dispatch(clearConsole('updateSubscription')),
   updateSubscription: (data) => dispatch(updateSubscription(data)),
 
 })

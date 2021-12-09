@@ -24,7 +24,7 @@ const data = [{
   ]
 }]
 
-const GetSubscription = ({subscription, getSubscription, subscriptionMetadata, cancelSubscription, push, subscriptionSetMetadata}) => {
+const GetSubscription = ({subscription, getSubscription, subscriptionMetadata, cancelSubscription, push, subscriptionSetMetadata, isLoading}) => {
   useIsLoggedIn()
 
   const handleSubmit = ({ subscriptionId }) => {
@@ -84,10 +84,12 @@ const GetSubscription = ({subscription, getSubscription, subscriptionMetadata, c
     )
   }
 
+  const submitButtonProps = {loading: isLoading}
+
   return (
     <Grid container>
       <Grid item md={12} className="grid-item">
-        <Form data={data} submitButtonText='Get Subscription' handleSubmit={handleSubmit} />
+        <Form data={data} submitButtonProps={submitButtonProps} submitButtonText='Get Subscription' handleSubmit={handleSubmit} />
         <div className="subscription-container">
           {renderSubscriptions()}
         </div>
@@ -98,7 +100,8 @@ const GetSubscription = ({subscription, getSubscription, subscriptionMetadata, c
 
 const mapStateToProps = (state) => ({
   subscription: state.subscription.individual,
-  subscriptionMetadata: state.subscription.metadata
+  subscriptionMetadata: state.subscription.metadata,
+  isLoading: state.metadata.get.isLoading
 })
 
 const mapDispatchToProps = (dispatch) => ({

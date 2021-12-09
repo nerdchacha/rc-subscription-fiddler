@@ -50,8 +50,8 @@ const data = [{
   ],
 }]
 
-const CreateSubscriptionForm = ({handleSubmit}) => {
-  return <Form data={data} submitButtonText='Subscribe' handleSubmit={handleSubmit} />
+const CreateSubscriptionForm = ({handleSubmit, submitButtonProps}) => {
+  return <Form data={data} submitButtonText='Subscribe' submitButtonProps={submitButtonProps} handleSubmit={handleSubmit} />
 }
 
 export default CreateSubscriptionForm
