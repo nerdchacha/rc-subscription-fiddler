@@ -15,7 +15,7 @@ const Subscriptions = () => {
       <Grid item lg={1} md={2} className="grid-item">
         <SubscriptionMenu />
       </Grid>
-      <Grid item lg={11} md={6} className="grid-item">
+      <Grid item lg={11} md={10} className="grid-item">
         <Switch>
           <Route exact path={ROUTES.CREATE_SUBSCRIPTION} component={CreateSubscription} />
           <Route exact path={ROUTES.GET_SUBSCRIPTIONS} component={GetSubscriptions} />

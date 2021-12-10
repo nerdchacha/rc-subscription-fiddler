@@ -6,7 +6,7 @@
   .container {
     position: relative;
     display: flex;
-    min-height: calc(100vh - 56px);
+    overflow: auto;
   }
 }
 

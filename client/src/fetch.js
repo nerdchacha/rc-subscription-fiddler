@@ -1,4 +1,4 @@
-import { globalSetRequestResponseData, logout } from './actions'
+import { globalSetRequestResponseData, logout, notifier } from './actions'
 
 const convertHeadersToObject = (headers) => {
   const h = {}
@@ -22,6 +22,7 @@ export const monkeyPathFetch = ({dispatch}) => {
       const status = clonedResponse.status
       if (status === 401) {
         // Auth token expired OR Unauthorized access. Logout user
+        dispatch(notifier.warn('Auth token has expired'))
         return dispatch(logout())
       }
       clonedResponse.text().then((responseBody) => {

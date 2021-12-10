@@ -1,4 +1,4 @@
-import { CONOSLE_APPEND, CONSOLE_CLEAR, SET_CONSOLE_ACTIVE_TAB, SET_CONSOLE_HEIGHT, SUBSCRIPTION_REMOVE, SUBSCRIPTION_CLEAR } from '../actions'
+import { CONOSLE_APPEND, CONSOLE_CLEAR, SET_CONSOLE_ACTIVE_TAB, SET_CONSOLE_HEIGHT, SUBSCRIPTION_REMOVE, SUBSCRIPTION_CLEAR, CONSOLE_DELETE } from '../actions'
 
 const initialState = {
   requestResponse: {data: []},
@@ -28,11 +28,12 @@ const consoleReducer = (state = initialState, action) => {
       const metadata = {...state.metadata, ...{height: action.value}}
       return { ...state, metadata }
     }
-    case SUBSCRIPTION_REMOVE: {
+    case SUBSCRIPTION_REMOVE: 
+    case CONSOLE_DELETE: {
       const nextState = {...state}
-      const metadata = {...state.metadata}
-      metadata.activeTab = metadata.activeTab === action.id ? 'general' : metadata.activeTab
       delete nextState[action.id]
+      const metadata = {...state.metadata}
+      metadata.activeTab = nextState.hasOwnProperty(metadata.activeTab) ? metadata.activeTab : 'general'
       return {...nextState, ...{metadata}}
     }
     case SUBSCRIPTION_CLEAR: {

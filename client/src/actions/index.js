@@ -17,7 +17,7 @@ export const SUBSCRIPTION_SET_METADATA  = 'SUBSCRIPTION_SET_METADATA'
 export const SET_IS_LOADING = 'SET_IS_LOADING'
 export const SET_CONSOLE_HEIGHT = 'SET_CONSOLE_HEIGHT'
 export const SET_CONSOLE_ACTIVE_TAB = 'SET_CONSOLE_ACTIVE_TAB'
-export const DELETE_CONSOLE = 'DELETE_CONSOLE'
+export const CONSOLE_DELETE = 'CONSOLE_DELETE'
 export const SET_METADATA = 'SET_METADATA'
 export const ENQUEUE_SNACKBAR = 'ENQUEUE_SNACKBAR';
 export const CLOSE_SNACKBAR = 'CLOSE_SNACKBAR';
@@ -36,6 +36,7 @@ export const subscriptionClear = (source = 'application') => ({type: SUBSCRIPTIO
 export const subscriptionSetMetadata = ({id, metadata}) => ({type: SUBSCRIPTION_SET_METADATA, id, metadata})
 export const setConsoleActiveTab = (value) => ({type: SET_CONSOLE_ACTIVE_TAB, value})
 export const setConsoleHeight = (value) => ({type: SET_CONSOLE_HEIGHT, value})
+export const deleteConsole = (id) => ({type: CONSOLE_DELETE, id})
 export const setMetadata = (source, value) => ({type: SET_METADATA, source, value})
 
 export const login = () => async (dispatch, getState) => {
@@ -109,7 +110,8 @@ export const logout = () => async (dispatch, getState) => {
   dispatch(push(ROUTES.LOGIN))
 }
 
-export const createSubscription = ({eventFilters}) => async (dispatch) => {
+export const createSubscription = ({eventFilters, transportType}) => async (dispatch) => {
+  if (transportType === 'webhook') { return dispatch(notifier.error('Webhooks are not implemented yet')) }
   dispatch(setMetadata('create', {isLoading: true}))
   dispatch(appendToConsole({text: 'Attempting to create subscription', name: 'general'}))
   try {
@@ -290,7 +292,7 @@ export const closeSnackbar = key => ({type: CLOSE_SNACKBAR, dismissAll: !key, ke
 
 export const removeSnackbar = key => ({ type: REMOVE_SNACKBAR, key})
 
-const notifier = {
+export const notifier = {
   success: (message) => enqueueSnackbar({message, options: {variant: 'success'}}),
   error: (message) => enqueueSnackbar({message, options: {variant: 'error'}}),
   info: (message) => enqueueSnackbar({message, options: {variant: 'info'}}),

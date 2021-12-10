@@ -15,16 +15,16 @@ import useNotification from './hooks/useNotification'
 
 import Console from './components/Console'
 
-const Fiddler = (props) => {
-  useEffect(() => props.loginUsingAccessToken(), [])
+const Fiddler = ({isLoading, consoleHeight, loginUsingAccessToken}) => {
+  useEffect(() => loginUsingAccessToken(), [])
 
   useNotification()
 
   return (
     <div className="rc-notification-app">
       <Header />
-      <RcLoading loading={props.isLoading} keepMounted>
-        <Container maxWidth="xl" space={2} className="container">
+      <RcLoading loading={isLoading} keepMounted>
+        <Container maxWidth="xl" space={2} className="container" style={{height: `calc(100vh - 56px - ${consoleHeight}px)`}}>
           <Switch>
             <Route exact path={ROUTES.LOGIN} component={Login} />
             <Route exact path={ROUTES.SIMPLE_LOGIN} component={SimpleLogin} />
@@ -39,7 +39,8 @@ const Fiddler = (props) => {
 }
 
 const mapStateToProps = (state) => ({
-  isLoading: state.global.isLoading
+  isLoading: state.global.isLoading,
+  consoleHeight: state.console.metadata.height
 })
 
 const mapDispatchToProps = (dispatch) => ({
