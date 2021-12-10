@@ -1,16 +1,26 @@
 import { connect } from 'react-redux'
 import { Grid } from '@mui/material'
 import { RcButton, RcList, RcIconButton, RcAccordion, RcAccordionSummary, RcAccordionDetails, RcTypography } from '@ringcentral/juno'
-import { Copy, Remove, Edit } from '@ringcentral/juno/icon'
+import { Copy, Remove, Edit, CodeSnippets } from '@ringcentral/juno/icon'
 import { push } from 'connected-react-router'
 
 import useIsLoggedIn from '../../hooks/useIsLoggedIn'
-import { getSubscriptions, subscriptionSetMetadata, cancelSubscription } from '../../actions'
+import { getSubscriptions, subscriptionSetMetadata, cancelSubscription, reopenConsoleTab } from '../../actions'
 import { ROUTES } from '../../constants'
 
 import './style.scss'
 
-const GetSubscriptions = ({getSubscriptions, allSubscriptions, generatedSubscriptions, cancelSubscription, subscriptionSetMetadata, push, subscriptionMetadata, isLoading}) => {
+const GetSubscriptions = ({
+  getSubscriptions,
+  allSubscriptions,
+  generatedSubscriptions,
+  cancelSubscription,
+  subscriptionSetMetadata,
+  push,
+  subscriptionMetadata,
+  isLoading,
+  reopenConsoleTab
+}) => {
   useIsLoggedIn()
 
   const handleCancel = (id) => (e) => {
@@ -19,14 +29,30 @@ const GetSubscriptions = ({getSubscriptions, allSubscriptions, generatedSubscrip
     cancelSubscription(id)
   }
 
-  const renderSubscriptions = (subscriptions) => subscriptions.map((subscription) => {
+  const handleOpenTerminal = (id) => (e) => {
+    e.stopPropagation()
+    reopenConsoleTab(id)
+  }
+
+  const renderSubscriptions = (subscriptions, createdBy) => subscriptions.map((subscription) => {
     const {id} = subscription
+    const renderConsoleIcon = createdBy === 'application' ? (
+      <RcIconButton
+        aria-label="console"
+        size="medium"
+        title='Open console tab'
+        TooltipProps={{placement: 'bottom'}}
+        onClick={handleOpenTerminal(id)}
+        symbol={CodeSnippets}
+      />
+    ) : ''
     return (
       <div key={id}>
         <RcAccordion variant="outlined">
             <RcAccordionSummary className="accordian-summary">
               <RcTypography variant="caption2">{id}</RcTypography>
               <div className="icon-container">
+                {renderConsoleIcon }
                 <RcIconButton
                   aria-label="update"
                   size="medium"
@@ -77,14 +103,14 @@ const GetSubscriptions = ({getSubscriptions, allSubscriptions, generatedSubscrip
   const renderGeneratedSubscriptions = Object.keys(filteredGeneratedSubscriptions).length ? (
     <div>
       <RcTypography variant="title1">Created/Updated using this app</RcTypography>
-      {renderSubscriptions(filteredGeneratedSubscriptions)}
+      {renderSubscriptions(filteredGeneratedSubscriptions, 'application')}
     </div>
   ) : ''
 
   const renderNonGeneratedSubscriptions = Object.keys(filteredNonGeneratedSubscriptions).length ? (
     <div>
       <RcTypography variant="title1">Not created using this app</RcTypography>
-      {renderSubscriptions(filteredNonGeneratedSubscriptions)}
+      {renderSubscriptions(filteredNonGeneratedSubscriptions, 'other')}
     </div>
   ) : ''
 
@@ -112,14 +138,15 @@ const mapStateToProps = (state) => ({
   allSubscriptions: state.subscription.all,
   generatedSubscriptions: state.subscription.application,
   subscriptionMetadata: state.subscription.metadata,
-  isLoading: state.metadata.all.isLoading
+  isLoading: state.metadata.all.isLoading,
 })
 
 const mapDispatchToProps = (dispatch) => ({
   getSubscriptions: () => dispatch(getSubscriptions()),
   cancelSubscription: (id) => dispatch(cancelSubscription(id)),
   push: (path) => dispatch(push(path)),
-  subscriptionSetMetadata: (id, metadata) => dispatch(subscriptionSetMetadata({id, metadata}))
+  subscriptionSetMetadata: (id, metadata) => dispatch(subscriptionSetMetadata({id, metadata})),
+  reopenConsoleTab: (id) => dispatch(reopenConsoleTab(id))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(GetSubscriptions)
