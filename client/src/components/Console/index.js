@@ -31,7 +31,11 @@ const Console = ({activeTab, height, setHeight, setActiveTab, consoleData, clear
 
   Object.keys(consoleData).filter((key) => !blacklist.includes(key)).forEach((key, i) => {
     tabsData.push({
-      label: `PubNub${i}`,
+      label: (
+        <RcTooltip title={key} placement="top">
+          <span>{`PubNub/${key.substring(0, 10)}...`}</span>
+        </RcTooltip>
+      ),
       value: key
     })
   })
@@ -126,7 +130,7 @@ const Console = ({activeTab, height, setHeight, setActiveTab, consoleData, clear
       <RcTabContext value={activeTab}>
         <RcPaper square className="paper-container">
           <div className="tab-list-container">
-            <RcTabList onChange={(e, value) => setActiveTab(value)}>
+            <RcTabList onChange={(e, value) => setActiveTab(value)} variant="scrollable" scrollButtons="auto">
               {TabChildren}
             </RcTabList>
           </div>
