@@ -1,5 +1,5 @@
 import { Grid } from '@mui/material'
-import { Route, Switch } from 'react-router-dom'
+import { Route, Switch, Redirect } from 'react-router-dom'
 
 import SubscriptionMenu from '../../components/SubscriptionMenu'
 import CreateSubscription from '../CreateSubscription'
@@ -22,6 +22,7 @@ const Subscriptions = () => {
           <Route exact path={ROUTES.GET_SUBSCRIPTION} component={GetSubscription} />
           <Route path={`${ROUTES.UPDATE_SUBSCRIPTION}/:id?`} component={UpdateSubscription} />
           <Route exact path={ROUTES.CANCEL_SUBSCRIPTION} component={CancelSubscription} />
+          <Redirect to={ROUTES.GET_SUBSCRIPTIONS} />
         </Switch>
       </Grid>
     </>

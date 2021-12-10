@@ -3,10 +3,10 @@ import { RcIconButton } from '@ringcentral/juno'
 import { Close } from '@ringcentral/juno/icon'
 import { connect } from 'react-redux'
 
-import NotificationApp from './NotificationApp'
+import SubscriptionApp from './SubscriptionApp'
 import { closeSnackbar } from './actions'
 
-const NotificationAppWrapper = ({closeSnackbar}) => {
+const SubscriptionAppWrapper = ({closeSnackbar}) => {
   return (
     <SnackbarProvider
       anchorOrigin={{vertical: 'top', horizontal: 'center'}}
@@ -15,7 +15,7 @@ const NotificationAppWrapper = ({closeSnackbar}) => {
       preventDuplicate
       action={(key) => <RcIconButton size="xsmall" color="neutral.l01" symbol={Close} onClick={() => closeSnackbar(key)}/>}
     >
-      <NotificationApp />
+      <SubscriptionApp />
     </SnackbarProvider>
     )
   }
@@ -24,4 +24,4 @@ const NotificationAppWrapper = ({closeSnackbar}) => {
     closeSnackbar: (key) => dispatch(closeSnackbar(key))
   })
   
-  export default connect(null, mapDispatchToProps)(NotificationAppWrapper)
+  export default connect(null, mapDispatchToProps)(SubscriptionAppWrapper)
