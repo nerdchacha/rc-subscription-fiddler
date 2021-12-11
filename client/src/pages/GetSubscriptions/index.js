@@ -100,34 +100,27 @@ const GetSubscriptions = ({
     return seed;
   }, [])
 
-  const renderGeneratedSubscriptions = Object.keys(filteredGeneratedSubscriptions).length ? (
-    <div>
-      <RcTypography variant="title1">Created/Updated using this app</RcTypography>
-      {renderSubscriptions(filteredGeneratedSubscriptions, 'application')}
-    </div>
-  ) : ''
+  const renderGeneratedSubscriptions =  Object.keys(filteredGeneratedSubscriptions).length ? 
+    renderSubscriptions(filteredGeneratedSubscriptions, 'application') :
+    'No data available'
 
-  const renderNonGeneratedSubscriptions = Object.keys(filteredNonGeneratedSubscriptions).length ? (
-    <div>
-      <RcTypography variant="title1">Not created using this app</RcTypography>
-      {renderSubscriptions(filteredNonGeneratedSubscriptions, 'other')}
-    </div>
-  ) : ''
-
-  const renderNoData = !Object.keys(filteredGeneratedSubscriptions).length && !Object.keys(filteredNonGeneratedSubscriptions).length ? (
-    <div>
-      <RcTypography variant="title1">No active subscriptions</RcTypography>
-    </div>
-  ) : ''
+  const renderNonGeneratedSubscriptions = Object.keys(filteredNonGeneratedSubscriptions).length ? 
+    renderSubscriptions(filteredNonGeneratedSubscriptions, 'other') :
+    'No data available'
 
   return (
     <Grid container>
       <Grid item md={12} sm={12} className="grid-item">
         <RcButton className="get-subscriptions-button" radius="zero" onClick={getSubscriptions} loading={isLoading}>Get subscriptions</RcButton>
         <RcList className="subscription-container">
-            {renderGeneratedSubscriptions}
-            {renderNonGeneratedSubscriptions}
-            {renderNoData}
+        <div>
+          <RcTypography variant="title1">Created/Updated by you using this app</RcTypography>
+          {renderGeneratedSubscriptions}
+        </div>
+        <div>
+          <RcTypography variant="title1">Other subscriptions</RcTypography>
+          {renderNonGeneratedSubscriptions}
+        </div>
         </RcList>
       </Grid>
     </Grid>
