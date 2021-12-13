@@ -1,0 +1,25 @@
+.subscription-item-container {
+  .accordian-summary {
+    > div {
+      display: flex;
+      justify-content: space-between;
+    }
+    p {
+      font-size: 14px;
+    }
+  }
+  .accordian-body {
+    overflow: auto;
+    display: flex;
+    justify-content: space-between;
+  }
+  .icon-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 10px;
+  }
+  pre {
+    width: 95%;
+  }
+}

@@ -1,13 +1,10 @@
 import { connect } from 'react-redux'
 import { Grid } from '@mui/material'
-import { RcIconButton, RcAccordion, RcAccordionSummary, RcAccordionDetails, RcTypography } from '@ringcentral/juno'
-import { Copy, Remove, Edit } from '@ringcentral/juno/icon'
-import { push } from 'connected-react-router'
 
 import Form from '../../components/Form'
+import SubscriptionItem from '../../components/SubscriptionItem'
 import useIsLoggedIn from '../../hooks/useIsLoggedIn'
-import { subscriptionSetMetadata, cancelSubscription, getSubscription } from '../../actions'
-import { ROUTES } from '../../constants'
+import { getSubscription } from '../../actions'
 
 import './style.scss'
 
@@ -24,64 +21,17 @@ const data = [{
   ]
 }]
 
-const GetSubscription = ({subscription, getSubscription, subscriptionMetadata, cancelSubscription, push, subscriptionSetMetadata, isLoading}) => {
+const GetSubscription = ({subscription, applicationSubscriptions, getSubscription, isLoading}) => {
   useIsLoggedIn()
 
   const handleSubmit = ({ subscriptionId }) => {
     getSubscription(subscriptionId)
   }
 
-  const handleCancel = (id) => (e) => {
-    e.stopPropagation()
-    subscriptionSetMetadata(id, {deleting: true})
-    cancelSubscription(id)
-  }
-
   const renderSubscriptions = () => {
     if (!subscription.id) { return '' }
-    const {id} = subscription
-    return (
-      <div key={id}>
-        <RcAccordion variant="outlined">
-            <RcAccordionSummary className="accordian-summary">
-              <RcTypography variant="caption2">{id}</RcTypography>
-              <div className="icon-container">
-                <RcIconButton
-                  aria-label="update"
-                  size="medium"
-                  title='Update subscription'
-                  TooltipProps={{placement: 'bottom'}}
-                  onClick={() => push(`${ROUTES.UPDATE_SUBSCRIPTION}/${id}`)}
-                  symbol={Edit}
-                />
-                <RcIconButton
-                  aria-label="remove"
-                  loading={(subscriptionMetadata[id] || {}).deleting}
-                  size="medium"
-                  title="Remove subscription"
-                  color="danger.b04"
-                  TooltipProps={{placement: 'bottom'}}
-                  symbol={Remove}
-                  onClick={handleCancel(id)}
-                />
-              </div>
-            </RcAccordionSummary>
-            <RcAccordionDetails className="accordian-body">
-              <pre>
-                {JSON.stringify(subscription, null, 2)}
-              </pre>
-              <RcIconButton
-                aria-label="copy"
-                size="medium"
-                title='copy'
-                TooltipProps={{placement: 'bottom'}}
-                onClick={() => navigator.clipboard.writeText(JSON.stringify(subscription, null, 2))}
-                symbol={Copy}
-              />
-            </RcAccordionDetails>
-          </RcAccordion>
-      </div>
-    )
+    const createdBy = Object.keys(applicationSubscriptions).includes(subscription.id) ? 'application' : 'all'
+    return <SubscriptionItem subscription={subscription} createdBy={createdBy} />
   }
 
   const submitButtonProps = {loading: isLoading}
@@ -100,15 +50,12 @@ const GetSubscription = ({subscription, getSubscription, subscriptionMetadata, c
 
 const mapStateToProps = (state) => ({
   subscription: state.subscription.individual,
-  subscriptionMetadata: state.subscription.metadata,
-  isLoading: state.metadata.get.isLoading
+  isLoading: state.metadata.get.isLoading,
+  applicationSubscriptions: state.subscription.application,
 })
 
 const mapDispatchToProps = (dispatch) => ({
   getSubscription: (subscriptionId) => dispatch(getSubscription(subscriptionId)),
-  cancelSubscription: (id) => dispatch(cancelSubscription(id)),
-  push: (path) => dispatch(push(path)),
-  subscriptionSetMetadata: (id, metadata) => dispatch(subscriptionSetMetadata({id, metadata}))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(GetSubscription)

@@ -10,9 +10,8 @@ const SubscriptionAppWrapper = ({closeSnackbar}) => {
   return (
     <SnackbarProvider
       anchorOrigin={{vertical: 'top', horizontal: 'center'}}
-      maxSnack={5}
+      maxSnack={3}
       hideIconVariant
-      preventDuplicate
       action={(key) => <RcIconButton size="xsmall" color="neutral.l01" symbol={Close} onClick={() => closeSnackbar(key)}/>}
     >
       <SubscriptionApp />

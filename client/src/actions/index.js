@@ -266,7 +266,6 @@ export const reregisterSubscriptionEvents = () => async (dispatch, getState) => 
 
 export const reopenConsoleTab = (id) => (dispatch, getState) => {
   const { console: consoleData } = getState()
-  if (consoleData.metadata.activeTab === id) { dispatch(notifier.info('Console tab already open')) }
   // User manually closed the tab. Recreate it
   if (!consoleData[id]) {
     dispatch(appendToConsole({text: 'Listening for notifications', type: 'info', name: id}))
