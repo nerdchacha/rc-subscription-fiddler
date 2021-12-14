@@ -4,6 +4,7 @@ import storage from 'redux-persist/lib/storage'
 import { routerMiddleware } from 'connected-react-router'
 import { createBrowserHistory } from 'history'
 import thunk from 'redux-thunk'
+import autoMergeLevel1 from 'redux-persist/lib/stateReconciler/autoMergeLevel1'
 
 import createRootReducer from './reducer'
 
@@ -29,6 +30,14 @@ const persistConfig = {
   key: 'rc-subscription-fiddler-root',
   whitelist: ['auth', 'console'],
   storage,
+  version: 1,
+  stateReconciler: (...props) => {
+    const [inboundState, originalState] = props
+    if (inboundState._persist.version !== originalState._persist.version) {
+      return originalState
+    }
+    return autoMergeLevel1(...props)
+  }
 }
 
 const persistedReducer = persistReducer(persistConfig, createRootReducer(history))
