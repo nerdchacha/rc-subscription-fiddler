@@ -27,7 +27,7 @@ export const appendToConsole = ({text, canCopy, type = 'text', name, collapsible
 export const clearConsole = (name) => ({type: CONSOLE_CLEAR, name})
 export const setLoggedIn = (isLoggedIn) => ({type: AUTH_SET_LOGGED_IN, isLoggedIn})
 export const globalSetIsLoading = (isLoading) => ({type: GLOBAL_SET_IS_LOADING, isLoading})
-export const setLoginDetails = (details) => ({type: AUTH_SET_LOGIN_DETAILS, details})
+export const setLoginDetails = (details, source) => ({type: AUTH_SET_LOGIN_DETAILS, details, source})
 export const setAccessToken = (token) => ({type: AUTH_SET_ACCESS_TOKEN, token})
 export const globalSetRequestResponseData = (data) => ({type: GLOBAL_REQUEST_RESPONSE_SET_DATA, data})
 export const subscriptionSave = ({data, process, source = 'application'}) => ({type: SUBSCRIPTION_SAVE, data, process, source})
@@ -39,9 +39,10 @@ export const setConsoleHeight = (value) => ({type: SET_CONSOLE_HEIGHT, value})
 export const deleteConsole = (id) => ({type: CONSOLE_DELETE, id})
 export const setMetadata = (source, value) => ({type: SET_METADATA, source, value})
 
-export const login = () => async (dispatch, getState) => {
+export const login = (loginType) => async (dispatch, getState) => {
   const { auth: { loginDetails } } = getState()
-  const { serverUrl, appKey, appSecret, loginType, username, password, extension } = loginDetails
+  const details = loginType === 'password' ? loginDetails.password : loginDetails['3LeggedLogin']
+  const { serverUrl, appKey, appSecret, username, password, extension } = details
   try {
     ringcentral.setup({serverUrl, appKey, appSecret, platformEventListener: platformEventListener(dispatch), subscriptionEventListener: subscriptionEventListener(dispatch)})
     if (loginType === 'password') { dispatch(globalSetIsLoading(true, 'auth')) }

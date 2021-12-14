@@ -119,12 +119,12 @@ const SimpleLogin = (props) => {
 }
 
 const mapStateToProps  = (state) => ({
-  loginDetails: state.auth.loginDetails
+  loginDetails: state.auth.loginDetails.password
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  setLoginDetails: (details) => dispatch(setLoginDetails(details)),
-  login: () => (dispatch(login()))
+  setLoginDetails: (details) => dispatch(setLoginDetails(details, 'password')),
+  login: () => (dispatch(login('password')))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(SimpleLogin)
