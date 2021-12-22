@@ -276,13 +276,13 @@ export const reopenConsoleTab = (id) => (dispatch, getState) => {
 }
 
 const platformEventListener = (dispatch) => ({source, event, data, type}) => {
-  dispatch(appendToConsole({text: `Received ${source.constructor.name} event ${event}`, type, name: 'general'}))
+  dispatch(appendToConsole({text: `Received Platform event ${event}`, type, name: 'general'}))
   dispatch(appendToConsole({text: 'Event Data', name: 'general'}))
   dispatch(appendToConsole({text: JSON.stringify(data, null, 2), canCopy: true, name: 'general', isCode: true, collapsible: true}))
 }
 
 const subscriptionEventListener = (dispatch) => ({source: subscription, event, data, type, subscriptionId}) => {
-  dispatch(appendToConsole({text: `Received ${subscription.constructor.name} event ${event}`, type, name: subscriptionId}))
+  dispatch(appendToConsole({text: `Received Subscription event ${event}`, type, name: subscriptionId}))
   dispatch(appendToConsole({text: 'Event Data', name: subscriptionId}))
   dispatch(appendToConsole({text: JSON.stringify(data, null, 2), canCopy: true, name: subscriptionId, isCode: true, collapsible: true}))
   if (event === subscription.events.renewError) {
