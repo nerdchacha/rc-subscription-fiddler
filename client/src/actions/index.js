@@ -41,7 +41,7 @@ export const setMetadata = (source, value) => ({type: SET_METADATA, source, valu
 
 export const login = (loginType) => async (dispatch, getState) => {
   const { auth: { loginDetails } } = getState()
-  const details = loginType === 'password' ? loginDetails.password : loginDetails['3LeggedLogin']
+  const details = loginType === 'password' ? loginDetails.password : loginDetails.oauth
   const { serverUrl, appKey, appSecret, username, password, extension } = details
   try {
     ringcentral.setup({serverUrl, appKey, appSecret, platformEventListener: platformEventListener(dispatch), subscriptionEventListener: subscriptionEventListener(dispatch)})
@@ -62,9 +62,9 @@ export const login = (loginType) => async (dispatch, getState) => {
 }
 
 export const loginUsingAccessToken = () => async (dispatch, getState) => {
-  const { auth: { loginDetails, isLoggedIn, token }, router: { location } } = getState()
+  const { auth: { loginDetails, isLoggedIn, token, type: loginType }, router: { location } } = getState()
   if (!isLoggedIn) { return }
-  const { serverUrl, appKey, appSecret } = loginDetails
+  const { serverUrl, appKey, appSecret } = loginDetails[loginType]
   ringcentral.setup({serverUrl, appKey, appSecret, platformEventListener: platformEventListener(dispatch), subscriptionEventListener: subscriptionEventListener(dispatch)})
   dispatch(globalSetIsLoading(true))
   dispatch(reregisterSubscriptionEvents())

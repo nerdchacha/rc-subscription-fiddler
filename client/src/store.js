@@ -30,7 +30,7 @@ const persistConfig = {
   key: 'rc-subscription-fiddler-root',
   whitelist: ['auth', 'console'],
   storage,
-  version: 1,
+  version: 2,
   stateReconciler: (...props) => {
     const [inboundState, originalState] = props
     if (inboundState._persist.version !== originalState._persist.version) {

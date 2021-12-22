@@ -71,7 +71,7 @@ const Login = (props) => {
   }]
 
   const handleSubmit = ({ serverUrl, appKey, appSecret, username, password, extension }) => {
-    props.setLoginDetails({ serverUrl, appKey, appSecret, loginType: '3LeggedLogin', username, password, extension })
+    props.setLoginDetails({ serverUrl, appKey, appSecret, loginType: 'oauth', username, password, extension })
     props.login()
   }
 
@@ -93,12 +93,12 @@ const Login = (props) => {
 }
 
 const mapStateToProps  = (state) => ({
-  loginDetails: state.auth.loginDetails['3LeggedLogin']
+  loginDetails: state.auth.loginDetails.oauth
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  setLoginDetails: (details) => dispatch(setLoginDetails(details, '3LeggedLogin')),
-  login: () => (dispatch(login('3LeggedLogin')))
+  setLoginDetails: (details) => dispatch(setLoginDetails(details, 'oauth')),
+  login: () => (dispatch(login('oauth')))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Login)

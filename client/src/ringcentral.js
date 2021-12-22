@@ -34,7 +34,7 @@ export const setup = ({ serverUrl, appKey, appSecret, platformEventListener = de
 
 export const login = async ({type, username, password, extension }) => {
   let tokenResponse
-  if (type === '3LeggedLogin') {
+  if (type === 'oauth') {
     const codeResponse = await platform.loginWindow({ url: platform.loginUrl({ implicit: false, usePKCE: true }) })
     tokenResponse = await platform.login(codeResponse)
   } else {
