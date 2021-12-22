@@ -1,10 +1,24 @@
+import { RcAlert } from '@ringcentral/juno'
+
 import Form from '../../../components/Form';
 
+const alertComponent = (
+  <RcAlert className="event-filter-alert" severity="warning">
+    <p>
+      List of available event filters can be found <a target="_blank" rel="noreferrer" href="https://developers.ringcentral.com/api-reference/events-notifications">here</a> under the "Notifications Types" sectopn</p>
+  </RcAlert>
+)
+
 const data = [{
+  id: 'loginTypeAlert',
+  type: 'passThrough',
+  component: alertComponent,
+}, {
   id: 'eventFilters',
   label: 'Event Filters*',
   type: 'textArray',
   initialValue: [''],
+  placeholder: '/restapi/v1.0/account/~/telephony/sessions',
   yupType: [{
     id: 'eventFilter',
     yupType: 'string',

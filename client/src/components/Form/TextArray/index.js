@@ -6,7 +6,7 @@ import { RcButton } from '@ringcentral/juno'
 import './style.scss'
 
 const TextArray = (props) => {
-  const { values, id, label, onChange, onBlur } = props
+  const { values, id, label, onChange, onBlur, placeholder } = props
   const listOfValues = values[id]
   return (
       <>
@@ -35,6 +35,7 @@ const TextArray = (props) => {
                       name={`${id}[${index}]`}
                       onChange={onChange}
                       onBlur={onBlur}
+                      placeholder={placeholder}
                       className="rc-input text-array-item"
                     />
                     {touched[index] && error[index] ? (<div className="error">{error[index]}</div>) : null}

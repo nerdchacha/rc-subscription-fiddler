@@ -14,7 +14,7 @@ const CreateSubscription = ({isLoading, createSubscription}) => {
 
   const submitButtonProps = {loading: isLoading}
   return (
-    <Grid container>
+    <Grid container className="create-subscription-container">
       <Grid item md={12} sm={12} className="grid-item">
         <Form handleSubmit={createSubscription} submitButtonProps={submitButtonProps} />
       </Grid>
