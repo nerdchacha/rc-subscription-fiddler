@@ -48,12 +48,13 @@ export const setToken = (token) => platform.login(token)
 
 export const logout = () => platform.logout()
 
-export const subscribe = async ({eventFilters}) => {
-  const subscription = subscriptions.createSubscription();
-  await subscription.setEventFilters(eventFilters).register();
-  registerSubscriptionEvents(subscription)
-  return subscription
-}
+export const createSubscription = async (data) => new Subscription(platform, subscriptions).create(data)
+
+export const removeSubscription = async (subscription, id) => new Subscription(platform, subscriptions).delete(subscription, id)
+
+export const listSubscriptions = async () => new Subscription(platform, subscriptions).list()
+
+export const getSubscription = async (id) => new Subscription(platform, subscriptions).get(id)
 
 export const registerSubscriptionEvents = (subscription) => {
   const options = {source: subscription, subscriptionId: subscription.subscription().id}
@@ -64,4 +65,75 @@ export const registerSubscriptionEvents = (subscription) => {
   subscription.on(subscription.events.renewError, (data) => _subscriptionEventListener(Object.assign({}, options, {event: subscription.events.renewError, data, type: 'error'})))
   subscription.on(subscription.events.subscribeSuccess, (data) => _subscriptionEventListener(Object.assign({}, options, {event: subscription.events.subscribeSuccess, data, type: 'success'})))
   subscription.on(subscription.events.subscribeError, (data) => _subscriptionEventListener(Object.assign({}, options, {event: subscription.events.subscribeError, data, type: 'error'})))
+}
+
+class Subscription {
+  constructor(platform, subscriptions) {
+    this.platform = platform
+    this.subscriptions = subscriptions
+    this.webhook = new WebHook(platform, subscriptions)
+    this.pubnub = new PubNub(platform, subscriptions)
+  }
+  getInstance (transport) {
+    return transport === 'WebHook' ? this.webhook : this.pubnub
+  }
+  async create (data) {
+    return this.getInstance(data.deliveryMode.transportType).create(data)
+  }
+  async list () {
+    const response = await this.platform.get('/restapi/v1.0/subscription')
+    return response.json()
+  }
+  async get (id) {
+    const response = await platform.get(`/restapi/v1.0/subscription/${id}`)
+    return response.json()
+  }
+  async update (subscription, data, id) {
+    if (!subscription) {
+      const response = await this.platform.get(`/restapi/v1.0/subscription/${id}`)
+      subscription = await response.json()
+    }
+    return this.getInstance(subscription.deliveryMode.transportType).update(subscription, data, id)
+  }
+  async delete (subscription, id) {
+    if (!subscription) {
+      const response = await this.platform.get(`/restapi/v1.0/subscription/${id}`)
+      subscription = await response.json()
+      console.log(subscription)
+    }
+    return this.getInstance(subscription.deliveryMode.transportType).delete(subscription, id)
+  }
+}
+
+class PubNub {
+  constructor (platform, subscriptions) {
+    this.platform = platform
+    this.subscriptions = subscriptions
+  }
+  async create (data) {
+    const subscription = this.subscriptions.createSubscription();
+    await subscription.setEventFilters(data.eventFilters).register();
+    registerSubscriptionEvents(subscription)
+    return subscription.subscription()
+  }
+  async delete (data) {
+    const subscription = this.subscriptions.createSubscription()
+    subscription.setSubscription(data)
+    await subscription.remove()
+  }
+}
+
+class WebHook {
+  constructor (platform, subscriptions) {
+    this.platform = platform
+    this.subscriptions = subscriptions
+  }
+  async create(data) {
+    const response = await this.platform.post('/restapi/v1.0/subscription', data)
+    const subscription = await response.json()
+    return subscription
+  }
+  async delete (data) {
+    await this.platform.delete(`/restapi/v1.0/subscription/${data.id}`)
+  }
 }

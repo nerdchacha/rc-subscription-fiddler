@@ -78,8 +78,8 @@ const Console = ({activeTab, height, setHeight, setActiveTab, consoleData, clear
         seed.push({type: 'text', text: `URL : ${request.url}`, isCode: true, canCopy: false , collapsible: false, fold: !!request.fold})
         seed.push({type: 'text', text: `Method : ${request.method}`, isCode: true, canCopy: false , collapsible: false, fold: !!request.fold})
         if (request.body) { seed.push({type: 'text', text: `${request.body}`, isCode: true, canCopy: false , collapsible: true, accordianSummary: 'Body', fold: !!request.fold}) }
-        const requestHeaders = Object.keys(request.headers).map((header) => (
-          <TableRow>
+        const requestHeaders = Object.keys(request.headers).map((header, i) => (
+          <TableRow key={i}>
             <TableCell size='small'>{header}</TableCell>
             <TableCell size='small'>{request.headers[header]}</TableCell>
           </TableRow>
@@ -90,8 +90,8 @@ const Console = ({activeTab, height, setHeight, setActiveTab, consoleData, clear
         seed.push({type: 'info', text: 'Response', isCode: false, canCopy: true , collapsible: false, contentToCopy: JSON.stringify(response, null, 2), fold: !!request.fold})
         seed.push({type: 'text', text: `Status : ${response.status}`, isCode: true, canCopy: false , collapsible: false, fold: !!request.fold})
         if (response.body) { seed.push({type: 'text', text: `${response.body}`, isCode: true, canCopy: false , collapsible: true, accordianSummary: 'Body', fold: !!request.fold}) }
-        const responseHeaders = Object.keys(response.headers).map((header) => (
-          <TableRow>
+        const responseHeaders = Object.keys(response.headers).map((header, i) => (
+          <TableRow key={i}>
             <TableCell size='small'>{header}</TableCell>
             <TableCell size='small'>{response.headers[header]}</TableCell>
           </TableRow>

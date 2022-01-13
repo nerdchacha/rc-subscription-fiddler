@@ -17,7 +17,7 @@ const GetSubscriptions = ({
   useIsLoggedIn()
 
   const renderSubscriptions = (subscriptions, createdBy) => subscriptions.map((subscription) => (
-    <SubscriptionItem subscription={subscription} createdBy={createdBy} />
+    <SubscriptionItem subscription={subscription} createdBy={createdBy} key={subscription.id} />
   ))
 
   const filteredGeneratedSubscriptions = Object.keys(allSubscriptions).reduce((seed, id) => {

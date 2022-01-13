@@ -33,9 +33,9 @@ const data = [{
   id: 'transportType',
   label: 'Transport Type*',
   type: 'select',
-  initialValue: 'pubnub',
+  initialValue: 'PubNub',
   yupType: 'string',
-  options: [{name: 'PubNub', value: 'pubnub'}, {name: 'Webhook', value: 'webhook'}],
+  options: [{name: 'PubNub', value: 'PubNub'}, {name: 'Webhook', value: 'WebHook'}],
   validations: [
     {
       type: 'required',
@@ -53,7 +53,7 @@ const data = [{
       { name: 'transportType', parser: { type: 'string' } }
     ],
     operator: {
-      '===': ['webhook', { var: 'transportType' }]
+      '===': ['WebHook', { var: 'transportType' }]
     }
   }, 
   validations: [
@@ -62,6 +62,20 @@ const data = [{
       params: ['Webhook URL required'],
     }
   ],
+}, {
+  id: 'verificationToken',
+  label: 'Verification Token',
+  placeholder: 'Enter verification token',
+  type: 'text',
+  yupType: 'string',
+  dependsOn: {
+    fields: [
+      { name: 'transportType', parser: { type: 'string' } }
+    ],
+    operator: {
+      '===': ['WebHook', { var: 'transportType' }]
+    }
+  }, 
 }]
 
 const CreateSubscriptionForm = ({handleSubmit, submitButtonProps}) => {

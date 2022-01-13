@@ -29,7 +29,7 @@ const SubscriptionMenu = (props) => {
         </div>
       )
     })
-    return [...seed, ...items, <RcDivider />]
+    return [...seed, ...items, <RcDivider key={`d_${i}`} />]
   }, [])
   return (
     <RcDrawer className="subscription-menu" open variant="persistent" radius="zero">
