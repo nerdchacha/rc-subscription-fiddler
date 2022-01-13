@@ -32,6 +32,20 @@
     overflow: auto;
     font-size: 15px;
     display: flex;
+    .collapsible {
+      background-color: transparent;
+       > div {
+        padding: 0;
+      }
+      .MuiAccordionSummary-root {
+        min-height: fit-content;
+      }
+      .MuiAccordionDetails-root {
+        padding: 3px;
+        border-top: 0;
+        min-height: fit-content;
+      }
+    }
     .text {
       width: 95%;
     }
@@ -46,6 +60,7 @@
     }
     .log-entry {
       display: flex;
+      align-items: flex-start;
       .icons {
         width: 25px;
         display: flex;
@@ -59,17 +74,27 @@
         padding-bottom: 20px;
       }
       margin: 5px 0;
-      p {
-        &.text {
+      .text {
+        color: rgb(200, 200, 200);
+        div {
           color: rgb(200, 200, 200);
         }
-        &.error {
+      }
+      .error {
+        color: tomato;
+        div {
           color: tomato;
         }
-        &.info {
-          color: gold
+      }
+      .info {
+        color: gold;
+        div {
+          color: gold;
         }
-        &.success {
+      }
+      .success {
+        color: lawngreen;
+        div {
           color: lawngreen;
         }
       }

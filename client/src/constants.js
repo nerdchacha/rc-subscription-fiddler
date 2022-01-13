@@ -5,7 +5,9 @@ export const ROUTES = Object.freeze({
   UPDATE_SUBSCRIPTION: '/update-subscription',
   CANCEL_SUBSCRIPTION: '/cancel-subscription',
   LOGIN: '/login',
-  SIMPLE_LOGIN: '/simple-login'
+  SIMPLE_LOGIN: '/simple-login',
+  RESOURCES: '/resources',
+  CODE: '/code',
 })
 
 export const CONSOLE_HEIGHT = 500

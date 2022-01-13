@@ -1,17 +1,19 @@
 import { createRef } from 'react'
 import { Resizable } from 're-resizable'
 import { RcPaper, RcTabContext, RcTabList, RcTabPanel, RcTab, RcIconButton, RcIcon, RcTooltip } from '@ringcentral/juno'
-import { Close, Blocked, JumpToLatest, JumpToUnread, Copy } from '@ringcentral/juno/icon'
+import { Close, Blocked, JumpToLatest, JumpToUnread, Copy, UnfoldLess, UnfoldMore } from '@ringcentral/juno/icon'
 import { connect } from 'react-redux'
+import { Table, TableBody, TableRow, TableCell } from '@mui/material'
 
-import { setConsoleActiveTab, setConsoleHeight, clearConsole, deleteConsole } from '../../actions'
+import Accordion from '../Accordion'
+import { setConsoleActiveTab, setConsoleHeight, clearConsole, deleteConsole, consoleFoldAll, consoleUnfoldAll } from '../../actions'
 
 import './style.scss'
 
 const width = '100%'
 const defaultHeight = 40
 
-const Console = ({activeTab, height, setHeight, setActiveTab, consoleData, clearConsole, deleteConsole}) => {
+const Console = ({activeTab, height, setHeight, setActiveTab, consoleData, clearConsole, deleteConsole, foldAll, unfoldAll}) => {
   const endRef = createRef()
   const startRef = createRef()
 
@@ -64,10 +66,47 @@ const Console = ({activeTab, height, setHeight, setActiveTab, consoleData, clear
     );
   });
 
+  const transformConsoleData = (data) => {
+    if (Array.isArray(data)) {
+      return data.map((item) => Object.assign({}, item, item.collapsible && {accordianSummary: '{...}'}))
+    }
+    // This is request response tab
+    return Object.keys(data).reduce((seed, requestId) => {
+      const { request, response } = data[requestId]
+      if (request) {
+        seed.push({type: 'success', text: 'Request', isCode: false, canCopy: true , collapsible: false, contentToCopy: JSON.stringify(request, null, 2), fold: !!request.fold})
+        seed.push({type: 'text', text: `URL : ${request.url}`, isCode: true, canCopy: false , collapsible: false, fold: !!request.fold})
+        seed.push({type: 'text', text: `Method : ${request.method}`, isCode: true, canCopy: false , collapsible: false, fold: !!request.fold})
+        if (request.body) { seed.push({type: 'text', text: `${request.body}`, isCode: true, canCopy: false , collapsible: true, accordianSummary: 'Body', fold: !!request.fold}) }
+        const requestHeaders = Object.keys(request.headers).map((header) => (
+          <TableRow>
+            <TableCell size='small'>{header}</TableCell>
+            <TableCell size='small'>{request.headers[header]}</TableCell>
+          </TableRow>
+        ))
+        seed.push({type: 'text', text: <Table>{requestHeaders}</Table>, isCode: false, canCopy: false , collapsible: true, accordianSummary: 'Headers', fold: !!request.fold})
+      }
+      if (response) {
+        seed.push({type: 'info', text: 'Response', isCode: false, canCopy: true , collapsible: false, contentToCopy: JSON.stringify(response, null, 2), fold: !!request.fold})
+        seed.push({type: 'text', text: `Status : ${response.status}`, isCode: true, canCopy: false , collapsible: false, fold: !!request.fold})
+        if (response.body) { seed.push({type: 'text', text: `${response.body}`, isCode: true, canCopy: false , collapsible: true, accordianSummary: 'Body', fold: !!request.fold}) }
+        const responseHeaders = Object.keys(response.headers).map((header) => (
+          <TableRow>
+            <TableCell size='small'>{header}</TableCell>
+            <TableCell size='small'>{response.headers[header]}</TableCell>
+          </TableRow>
+        ))
+        seed.push({type: 'text', text: <Table>{responseHeaders}</Table>, isCode: false, canCopy: false , collapsible: true, accordianSummary: 'Headers', fold: !!request.fold})
+      }
+      return seed
+    }, [])
+  }
+
   const TabContentChildren = tabsData.map((tab) => {
     const { value } = tab;
     const data = consoleData[value] ? consoleData[value].data : []
-    const renderContent = data.map(({type, text, isCode, canCopy}, i) => {
+    const transformedData = transformConsoleData(data)
+    const renderContent = transformedData.map(({type, text, isCode, canCopy, collapsible, fold, accordianSummary, contentToCopy}, i) => {
       const content = isCode ? <pre>{text}</pre> : (
         <p className={type}>
           {text}
@@ -75,17 +114,28 @@ const Console = ({activeTab, height, setHeight, setActiveTab, consoleData, clear
       )
       const renderIcons = canCopy ? (
         <RcTooltip title="copy" >
-          <RcIcon symbol={Copy} size="small" onClick={() => navigator.clipboard.writeText(text)} />
+          <RcIcon symbol={Copy} size="small" onClick={() => navigator.clipboard.writeText(contentToCopy || text)} />
         </RcTooltip>
       ) : ''
+      
+      const renderContent = collapsible ? (
+        <Accordion
+          summary={accordianSummary}
+          detail={content}
+          iconButtonProps={{variant: 'contained', size: 'xsmall'}}
+          defaultExpaned={!!!fold}
+        />
+      ) :
+      content
+
       return (
       <div className="log-entry" key={i}>
         <div className="icons">{renderIcons}</div>
-        <div className="text">{content}</div>
+        <div className="text">{renderContent}</div>
       </div>
       )
     })
-    const renderIcons = data.length ? (
+    const renderIcons = transformedData.length ? (
       <div className="icons">
         <RcIconButton
           size="large"
@@ -135,6 +185,24 @@ const Console = ({activeTab, height, setHeight, setActiveTab, consoleData, clear
             </RcTabList>
           </div>
           <RcIconButton
+            aria-label="fold all"
+            size="medium"
+            title="Collapse all items"
+            color="neutral.l01"
+            TooltipProps={{placement: 'top'}}
+            symbol={UnfoldLess}
+            onClick={() => foldAll(activeTab)}
+          />
+          <RcIconButton
+            aria-label="unfold all"
+            size="medium"
+            title="Expand all items"
+            color="neutral.l01"
+            TooltipProps={{placement: 'top'}}
+            symbol={UnfoldMore}
+            onClick={() => unfoldAll(activeTab)}
+          />
+          <RcIconButton
             aria-label="clear"
             size="medium"
             title="Clear console"
@@ -169,7 +237,9 @@ const mapDispatchToProps = (dispatch) => ({
   setActiveTab: (value) => dispatch(setConsoleActiveTab(value)),
   setHeight: (value) => dispatch(setConsoleHeight(value)),
   clearConsole: (name) => dispatch(clearConsole(name)),
-  deleteConsole: (id) => dispatch(deleteConsole(id))
+  deleteConsole: (id) => dispatch(deleteConsole(id)),
+  foldAll: (name) => dispatch(consoleFoldAll(name)),
+  unfoldAll: (name) => dispatch(consoleUnfoldAll(name)),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Console)

@@ -1,0 +1,9 @@
+.resources-container {
+  .MuiListSubheader-root {
+    margin-bottom: 15px;
+    margin-top: 40px;
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+}

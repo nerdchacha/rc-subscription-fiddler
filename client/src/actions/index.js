@@ -9,7 +9,8 @@ export const AUTH_SET_LOGGED_IN = 'AUTH_SET_LOGGED_IN'
 export const GLOBAL_SET_IS_LOADING = 'GLOBAL_SET_IS_LOADING'
 export const AUTH_SET_LOGIN_DETAILS = 'AUTH_SET_LOGIN_DETAILS'
 export const AUTH_SET_ACCESS_TOKEN = 'AUTH_SET_ACCESS_TOKEN'
-export const GLOBAL_REQUEST_RESPONSE_SET_DATA = 'GLOBAL_REQUEST_RESPONSE_SET_DATA'
+export const CONSOLE_REQUEST_SET_DATA = 'CONSOLE_REQUEST_SET_DATA'
+export const CONSOLE_RESPONSE_SET_DATA = 'CONSOLE_RESPONSE_SET_DATA'
 export const SUBSCRIPTION_SAVE = 'SUBSCRIPTION_SAVE'
 export const SUBSCRIPTION_REMOVE = 'SUBSCRIPTION_REMOVE'
 export const SUBSCRIPTION_CLEAR = 'SUBSCRIPTION_CLEAR'
@@ -22,6 +23,7 @@ export const SET_METADATA = 'SET_METADATA'
 export const ENQUEUE_SNACKBAR = 'ENQUEUE_SNACKBAR';
 export const CLOSE_SNACKBAR = 'CLOSE_SNACKBAR';
 export const REMOVE_SNACKBAR = 'REMOVE_SNACKBAR';
+export const CONSOLE_FOLD_ALL = 'CONSOLE_FOLD_ALL'
 
 export const appendToConsole = ({text, canCopy, type = 'text', name, collapsible = false, isCode = false }) => ({type: CONOSLE_APPEND, data: {text, canCopy, type, collapsible, isCode}, name})
 export const clearConsole = (name) => ({type: CONSOLE_CLEAR, name})
@@ -29,7 +31,8 @@ export const setLoggedIn = (isLoggedIn) => ({type: AUTH_SET_LOGGED_IN, isLoggedI
 export const globalSetIsLoading = (isLoading) => ({type: GLOBAL_SET_IS_LOADING, isLoading})
 export const setLoginDetails = (details, source) => ({type: AUTH_SET_LOGIN_DETAILS, details, source})
 export const setAccessToken = (token) => ({type: AUTH_SET_ACCESS_TOKEN, token})
-export const globalSetRequestResponseData = (data) => ({type: GLOBAL_REQUEST_RESPONSE_SET_DATA, data})
+export const consoleSetRequestData = (requestId, data) => ({type: CONSOLE_REQUEST_SET_DATA, data, requestId})
+export const consoleSetResponseData = (requestId, data) => ({type: CONSOLE_RESPONSE_SET_DATA, data, requestId})
 export const subscriptionSave = ({data, process, source = 'application'}) => ({type: SUBSCRIPTION_SAVE, data, process, source})
 export const subscriptionRemove = ({id, source = 'application'}) => ({type: SUBSCRIPTION_REMOVE, id, source})
 export const subscriptionClear = (source = 'application') => ({type: SUBSCRIPTION_CLEAR, source})
@@ -38,6 +41,8 @@ export const setConsoleActiveTab = (value) => ({type: SET_CONSOLE_ACTIVE_TAB, va
 export const setConsoleHeight = (value) => ({type: SET_CONSOLE_HEIGHT, value})
 export const deleteConsole = (id) => ({type: CONSOLE_DELETE, id})
 export const setMetadata = (source, value) => ({type: SET_METADATA, source, value})
+export const consoleFoldAll = (name) => ({type: CONSOLE_FOLD_ALL, name, fold: true})
+export const consoleUnfoldAll = (name) => ({type: CONSOLE_FOLD_ALL, name, fold: false})
 
 export const login = (loginType) => async (dispatch, getState) => {
   const { auth: { loginDetails } } = getState()
@@ -124,7 +129,7 @@ export const createSubscription = ({eventFilters, transportType}) => async (disp
     dispatch(setConsoleActiveTab(subscriptionData.id))
     dispatch(setConsoleHeight(CONSOLE_HEIGHT))
     dispatch(appendToConsole({text: 'Subscription Details', name: subscriptionData.id}))
-    dispatch(appendToConsole({text: JSON.stringify(subscriptionData, null, 2), canCopy: true, name: subscriptionData.id, collapsible: true, isCode: true}))
+    dispatch(appendToConsole({text: JSON.stringify(subscriptionData, null, 2), canCopy: true, name: subscriptionData.id, collapsible: !!Object.keys(subscriptionData).length, isCode: true}))
     dispatch(appendToConsole({text: 'Listening for notifications', type: 'info', name: subscriptionData.id}))
   } catch (e)  {
     dispatch(notifier.error(`Unable to create subscription. ${e.message}`))
@@ -204,7 +209,7 @@ export const updateSubscription = ({subscriptionId, eventFilters}) => async (dis
     dispatch(notifier.success('Subscription updates successfully'))
     dispatch(appendToConsole({text: `Successfully updated subscription with id ${subscriptionId}`, name: 'general', type: 'success'}))
     dispatch(appendToConsole({text: 'Subscription details', name: subscriptionId}))
-    dispatch(appendToConsole({text: JSON.stringify(updatedSubscriptionData, null, 2), canCopy: true, name: subscriptionId, isCode: true, collapsible: true}))
+    dispatch(appendToConsole({text: JSON.stringify(updatedSubscriptionData, null, 2), canCopy: true, name: subscriptionId, isCode: true, collapsible: !!Object.keys(updatedSubscriptionData).length}))
     dispatch(appendToConsole({text: 'Listening for notifications', type: 'info', name: subscriptionData.id}))
    } catch (e) {
     dispatch(notifier.error(`Unable to update subscription. ${e.message}`))
@@ -278,13 +283,13 @@ export const reopenConsoleTab = (id) => (dispatch, getState) => {
 const platformEventListener = (dispatch) => ({source, event, data, type}) => {
   dispatch(appendToConsole({text: `Received Platform event ${event}`, type, name: 'general'}))
   dispatch(appendToConsole({text: 'Event Data', name: 'general'}))
-  dispatch(appendToConsole({text: JSON.stringify(data, null, 2), canCopy: true, name: 'general', isCode: true, collapsible: true}))
+  dispatch(appendToConsole({text: data ? JSON.stringify(data, null, 2) : '', canCopy: true, name: 'general', isCode: true, collapsible: !!Object.keys(data).length}))
 }
 
 const subscriptionEventListener = (dispatch) => ({source: subscription, event, data, type, subscriptionId}) => {
   dispatch(appendToConsole({text: `Received Subscription event ${event}`, type, name: subscriptionId}))
   dispatch(appendToConsole({text: 'Event Data', name: subscriptionId}))
-  dispatch(appendToConsole({text: JSON.stringify(data, null, 2), canCopy: true, name: subscriptionId, isCode: true, collapsible: true}))
+  dispatch(appendToConsole({text: data ? JSON.stringify(data, null, 2) : '', canCopy: true, name: subscriptionId, isCode: true, collapsible: !!Object.keys(data).length}))
   if (event === subscription.events.renewError) {
     dispatch(appendToConsole({text: `Subscription with id ${subscriptionId} failed to renew`, type: 'info', name: 'general'}))
     dispatch(appendToConsole({text: `Removing its data from the application`, type: 'info', name: 'general'}))

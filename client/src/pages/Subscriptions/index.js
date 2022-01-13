@@ -7,6 +7,7 @@ import GetSubscriptions from '../GetSubscriptions'
 import GetSubscription from '../GetSubscription'
 import UpdateSubscription from '../UpdateSubscription'
 import CancelSubscription from '../CancelSubscription'
+import Resources from '../Resources'
 import { ROUTES } from '../../constants'
 
 const Subscriptions = () => {
@@ -22,6 +23,7 @@ const Subscriptions = () => {
           <Route exact path={ROUTES.GET_SUBSCRIPTION} component={GetSubscription} />
           <Route path={`${ROUTES.UPDATE_SUBSCRIPTION}/:id?`} component={UpdateSubscription} />
           <Route exact path={ROUTES.CANCEL_SUBSCRIPTION} component={CancelSubscription} />
+          <Route exact path={ROUTES.RESOURCES} component={Resources} />
           <Redirect to={ROUTES.GET_SUBSCRIPTIONS} />
         </Switch>
       </Grid>

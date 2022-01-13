@@ -1,4 +1,4 @@
-import { globalSetRequestResponseData, logout, notifier } from './actions'
+import { consoleSetRequestData, consoleSetResponseData, logout, notifier } from './actions'
 
 const convertHeadersToObject = (headers) => {
   const h = {}
@@ -13,8 +13,9 @@ export const monkeyPathFetch = ({dispatch}) => {
   window.fetch = (...args) => {
     const clonedRequest = args[0].clone()
     if (!clonedRequest.url.includes('ringcentral')) { return originalFetch(...args) }
+    const requestId = new Date().getTime()
     clonedRequest.text().then((requestBody) => {
-      dispatch(globalSetRequestResponseData({method: clonedRequest.method, url: clonedRequest.url, body: requestBody, headers: convertHeadersToObject(clonedRequest.headers)}))
+      dispatch(consoleSetRequestData(requestId, {method: clonedRequest.method, url: clonedRequest.url, body: requestBody, headers: convertHeadersToObject(clonedRequest.headers)}))
     })
     const responsePromise = originalFetch(...args)
     responsePromise.then((response) => {
@@ -26,7 +27,7 @@ export const monkeyPathFetch = ({dispatch}) => {
         return dispatch(logout())
       }
       clonedResponse.text().then((responseBody) => {
-        dispatch(globalSetRequestResponseData({url: clonedResponse.url, status, body: responseBody, headers: convertHeadersToObject(clonedResponse.headers)}))
+        dispatch(consoleSetResponseData(requestId, {status, body: responseBody, headers: convertHeadersToObject(clonedResponse.headers)}))
       })
     })
     return responsePromise
