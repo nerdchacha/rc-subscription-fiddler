@@ -29,9 +29,10 @@ const GetSubscription = ({subscription, applicationSubscriptions, getSubscriptio
   }
 
   const renderSubscriptions = () => {
-    if (!subscription.id) { return '' }
+    if (!Object.keys(subscription).length) { return '' }
+    const individualSubscription = subscription[Object.keys(subscription)[0]]
     const createdBy = Object.keys(applicationSubscriptions).includes(subscription.id) ? 'application' : 'all'
-    return <SubscriptionItem subscription={subscription} createdBy={createdBy} />
+    return <SubscriptionItem subscription={individualSubscription} createdBy={createdBy} />
   }
 
   const submitButtonProps = {loading: isLoading}

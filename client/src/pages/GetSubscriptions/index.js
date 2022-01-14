@@ -43,7 +43,7 @@ const GetSubscriptions = ({
         <RcButton className="get-subscriptions-button" radius="zero" onClick={getSubscriptions} loading={isLoading}>Get subscriptions</RcButton>
         <RcList className="subscription-container">
         <div>
-          <RcTypography variant="title1">Created/Updated by you using this app</RcTypography>
+          <RcTypography variant="title1">PubNub subscriptions created/updated by you using this app</RcTypography>
           {renderGeneratedSubscriptions}
         </div>
         <div>

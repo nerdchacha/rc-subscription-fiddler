@@ -5,6 +5,8 @@ import { routerMiddleware } from 'connected-react-router'
 import { createBrowserHistory } from 'history'
 import thunk from 'redux-thunk'
 import autoMergeLevel1 from 'redux-persist/lib/stateReconciler/autoMergeLevel1'
+import { createTransform } from 'redux-persist'
+import update from 'immutability-helper'
 
 import createRootReducer from './reducer'
 
@@ -26,18 +28,25 @@ const composedEnhancers = compose(
   ...enhancers
 )
 
+const consoleTransform = createTransform( 
+  (inboundState) => update(inboundState, {requestResponse: {data: {$set: []}}}),
+  (outboundState) => outboundState,
+  { whitelist: ['console'] }
+)
+
 const persistConfig = {
   key: 'rc-subscription-fiddler-root',
   whitelist: ['auth', 'console'],
   storage,
-  version: 3,
+  version: 4,
   stateReconciler: (...props) => {
     const [inboundState, originalState] = props
     if (inboundState._persist.version !== originalState._persist.version) {
       return originalState
     }
     return autoMergeLevel1(...props)
-  }
+  },
+  transforms: [consoleTransform]
 }
 
 const persistedReducer = persistReducer(persistConfig, createRootReducer(history))

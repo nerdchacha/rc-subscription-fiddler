@@ -34,6 +34,18 @@ const data = [{
       }
     ]
   }]
+}, {
+  id: 'expiresIn',
+  label: 'Expires In',
+  placeholder: 'Subscription lifetime in seconds (Only available for webhook right now)',
+  type: 'number',
+  yupType: 'number',
+  validations: [
+    {
+      type: 'integer',
+      params: ['Expires in should be a number'],
+    }
+  ]
 }]
 
 const UpdateSubscriptions = ({updateSubscription, isLoading}) => {

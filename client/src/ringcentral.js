@@ -24,12 +24,12 @@ export const setup = ({ serverUrl, appKey, appSecret, platformEventListener = de
   _subscriptionEventListener = subscriptionEventListener
   platform = sdk.platform()
   subscriptions = new Subscriptions({ sdk });
-  platform.on(platform.events.loginSuccess, (data) => _platformEventListener({source: platform, event: platform.events.loginSuccess, data, type: 'success'}))
-  platform.on(platform.events.loginError, (data) => _platformEventListener({source: platform, event: platform.events.loginError, data, type: 'error'}))
-  platform.on(platform.events.logoutSuccess, (data) => _platformEventListener({source: platform, event: platform.events.logoutSuccess, data, type: 'success'}))
-  platform.on(platform.events.logoutError, (data) => _platformEventListener({source: platform, event: platform.events.logoutError, data, type: 'error'}))
-  platform.on(platform.events.refreshSuccess, (data) => _platformEventListener({source: platform, event: platform.events.refreshSuccess, data, type: 'success'}))
-  platform.on(platform.events.refreshError, (data) => _platformEventListener({source: platform, event: platform.events.refreshError, data, type: 'error'}))
+  platform.on(platform.events.loginSuccess, (data) => _platformEventListener({source: platform, event: platform.events.loginSuccess, data, className: 'success'}))
+  platform.on(platform.events.loginError, (data) => _platformEventListener({source: platform, event: platform.events.loginError, data, className: 'error'}))
+  platform.on(platform.events.logoutSuccess, (data) => _platformEventListener({source: platform, event: platform.events.logoutSuccess, data, className: 'success'}))
+  platform.on(platform.events.logoutError, (data) => _platformEventListener({source: platform, event: platform.events.logoutError, data, className: 'error'}))
+  platform.on(platform.events.refreshSuccess, (data) => _platformEventListener({source: platform, event: platform.events.refreshSuccess, data, className: 'success'}))
+  platform.on(platform.events.refreshError, (data) => _platformEventListener({source: platform, event: platform.events.refreshError, data, className: 'error'}))
 }
 
 export const login = async ({type, username, password, extension }) => {
@@ -56,15 +56,17 @@ export const listSubscriptions = async () => new Subscription(platform, subscrip
 
 export const getSubscription = async (id) => new Subscription(platform, subscriptions).get(id)
 
+export const updateSubscription = async (subscription, id, data) => new Subscription(platform, subscriptions).update(subscription, id, data)
+
 export const registerSubscriptionEvents = (subscription) => {
   const options = {source: subscription, subscriptionId: subscription.subscription().id}
-  subscription.on(subscription.events.notification, (data) => _subscriptionEventListener(Object.assign({}, options, {event: subscription.events.notification, data, type: 'success'})))
-  subscription.on(subscription.events.removeSuccess, (data) => _subscriptionEventListener(Object.assign({}, options, {event: subscription.events.removeSuccess, data, type: 'success'})))
-  subscription.on(subscription.events.removeError, (data) => _subscriptionEventListener(Object.assign({}, options, {event: subscription.events.removeError, data, type: 'error'})))
-  subscription.on(subscription.events.renewSuccess, (data) => _subscriptionEventListener(Object.assign({}, options, {event: subscription.events.renewSuccess, data, type: 'success'})))
-  subscription.on(subscription.events.renewError, (data) => _subscriptionEventListener(Object.assign({}, options, {event: subscription.events.renewError, data, type: 'error'})))
-  subscription.on(subscription.events.subscribeSuccess, (data) => _subscriptionEventListener(Object.assign({}, options, {event: subscription.events.subscribeSuccess, data, type: 'success'})))
-  subscription.on(subscription.events.subscribeError, (data) => _subscriptionEventListener(Object.assign({}, options, {event: subscription.events.subscribeError, data, type: 'error'})))
+  subscription.on(subscription.events.notification, (data) => _subscriptionEventListener(Object.assign({}, options, {event: subscription.events.notification, data, className: 'success'})))
+  subscription.on(subscription.events.removeSuccess, (data) => _subscriptionEventListener(Object.assign({}, options, {event: subscription.events.removeSuccess, data, className: 'success'})))
+  subscription.on(subscription.events.removeError, (data) => _subscriptionEventListener(Object.assign({}, options, {event: subscription.events.removeError, data, className: 'error'})))
+  subscription.on(subscription.events.renewSuccess, (data) => _subscriptionEventListener(Object.assign({}, options, {event: subscription.events.renewSuccess, data, className: 'success'})))
+  subscription.on(subscription.events.renewError, (data) => _subscriptionEventListener(Object.assign({}, options, {event: subscription.events.renewError, data, className: 'error'})))
+  subscription.on(subscription.events.subscribeSuccess, (data) => _subscriptionEventListener(Object.assign({}, options, {event: subscription.events.subscribeSuccess, data, className: 'success'})))
+  subscription.on(subscription.events.subscribeError, (data) => _subscriptionEventListener(Object.assign({}, options, {event: subscription.events.subscribeError, data, className: 'error'})))
 }
 
 class Subscription {
@@ -88,20 +90,19 @@ class Subscription {
     const response = await platform.get(`/restapi/v1.0/subscription/${id}`)
     return response.json()
   }
-  async update (subscription, data, id) {
+  async update (subscription, id, data) {
     if (!subscription) {
       const response = await this.platform.get(`/restapi/v1.0/subscription/${id}`)
       subscription = await response.json()
     }
-    return this.getInstance(subscription.deliveryMode.transportType).update(subscription, data, id)
+    return this.getInstance(subscription.deliveryMode.transportType).update(subscription, data)
   }
   async delete (subscription, id) {
     if (!subscription) {
       const response = await this.platform.get(`/restapi/v1.0/subscription/${id}`)
       subscription = await response.json()
-      console.log(subscription)
     }
-    return this.getInstance(subscription.deliveryMode.transportType).delete(subscription, id)
+    return this.getInstance(subscription.deliveryMode.transportType).delete(subscription)
   }
 }
 
@@ -116,9 +117,15 @@ class PubNub {
     registerSubscriptionEvents(subscription)
     return subscription.subscription()
   }
-  async delete (data) {
+  async update (subscriptionData, data) {
     const subscription = this.subscriptions.createSubscription()
-    subscription.setSubscription(data)
+    subscription.setSubscription(subscriptionData)
+    await subscription.setEventFilters(data.eventFilters).register()
+    return subscription.subscription()
+  }
+  async delete (subscriptionData) {
+    const subscription = this.subscriptions.createSubscription()
+    subscription.setSubscription(subscriptionData)
     await subscription.remove()
   }
 }
@@ -133,7 +140,13 @@ class WebHook {
     const subscription = await response.json()
     return subscription
   }
-  async delete (data) {
-    await this.platform.delete(`/restapi/v1.0/subscription/${data.id}`)
+  async update (subscriptionData, data) {
+    const body = { eventFilters: data.eventFilters, expiresIn: data.expiresIn }
+    const response = await this.platform.put(`/restapi/v1.0/subscription/${subscriptionData.id}`, body)
+    const subscription = await response.json()
+    return subscription
+  }
+  async delete (subscriptionData) {
+    await this.platform.delete(`/restapi/v1.0/subscription/${subscriptionData.id}`)
   }
 }

@@ -1,3 +1,5 @@
+import update from 'immutability-helper'
+
 import { SET_METADATA } from '../actions'
 
 const initialState = { create: {}, update: {}, get: {}, cancel: {}, all: {} } 
@@ -5,8 +7,7 @@ const initialState = { create: {}, update: {}, get: {}, cancel: {}, all: {} }
 const metadata = (state = initialState, action) => {
   switch (action.type) {
     case SET_METADATA: {
-      const newData = Object.assign({}, state[action.source], action.value)
-      return { ...state, ...{[action.source]: newData} }
+      return update(state, { [action.source]: { $merge: action.value } })
     }
     default:
       return state
