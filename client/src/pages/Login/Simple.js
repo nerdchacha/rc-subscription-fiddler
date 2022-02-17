@@ -62,27 +62,27 @@ const SimpleLogin = (props) => {
       }
     ],
   }, {
-    id: 'appKey',
-    label: 'App Key*',
-    placeholder: 'Enter App Key',
+    id: 'clientId',
+    label: 'Client Id*',
+    placeholder: 'Enter Client Id',
     type: 'text',
     yupType: 'string',
     validations: [
       {
         type: 'required',
-        params: ['App Key required'],
+        params: ['Client Id required'],
       }
     ],
   }, {
-    id: 'appSecret',
-    label: 'App Secret*',
-    placeholder: 'Enter App Secret',
+    id: 'clientSecret',
+    label: 'Client Secret*',
+    placeholder: 'Enter Client Secret',
     type: 'text',
     yupType: 'string',
     validations: [
       {
         type: 'required',
-        params: ['App Secret required'],
+        params: ['Client Secret required'],
       }
     ],
   }, {
@@ -96,8 +96,8 @@ const SimpleLogin = (props) => {
     }]
   }]
 
-  const handleSubmit = ({ serverUrl, appKey, appSecret, username, password, extension }) => {
-    props.setLoginDetails({ serverUrl, appKey, appSecret, loginType: 'password', username, password, extension })
+  const handleSubmit = ({ serverUrl, clientId, clientSecret, username, password, extension }) => {
+    props.setLoginDetails({ serverUrl, clientId, clientSecret, loginType: 'password', username, password, extension })
     props.login()
   }
 

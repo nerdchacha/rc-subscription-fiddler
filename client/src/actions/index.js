@@ -44,9 +44,9 @@ export const consoleUnfoldAll = (name) => ({type: CONSOLE_FOLD_ALL, name, fold: 
 export const login = (loginType) => async (dispatch, getState) => {
   const { auth: { loginDetails } } = getState()
   const details = loginType === 'password' ? loginDetails.password : loginDetails.oauth
-  const { serverUrl, appKey, appSecret, username, password, extension } = details
+  const { serverUrl, clientId, clientSecret, username, password, extension } = details
   try {
-    ringcentral.setup({serverUrl, appKey, appSecret, platformEventListener: platformEventListener(dispatch), subscriptionEventListener: subscriptionEventListener(dispatch)})
+    ringcentral.setup({serverUrl, clientId, clientSecret, platformEventListener: platformEventListener(dispatch), subscriptionEventListener: subscriptionEventListener(dispatch)})
     if (loginType === 'password') { dispatch(globalSetIsLoading(true, 'auth')) }
     const token = await ringcentral.login({type: loginType, username, password, extension})
     dispatch(setLoggedIn(true))
@@ -66,8 +66,8 @@ export const login = (loginType) => async (dispatch, getState) => {
 export const loginUsingAccessToken = () => async (dispatch, getState) => {
   const { auth: { loginDetails, isLoggedIn, token, type: loginType }, router: { location } } = getState()
   if (!isLoggedIn) { return }
-  const { serverUrl, appKey, appSecret } = loginDetails[loginType]
-  ringcentral.setup({serverUrl, appKey, appSecret, platformEventListener: platformEventListener(dispatch), subscriptionEventListener: subscriptionEventListener(dispatch)})
+  const { serverUrl, clientId, clientSecret } = loginDetails[loginType]
+  ringcentral.setup({serverUrl, clientId, clientSecret, platformEventListener: platformEventListener(dispatch), subscriptionEventListener: subscriptionEventListener(dispatch)})
   dispatch(globalSetIsLoading(true))
   dispatch(reregisterSubscriptionEvents())
   try {
